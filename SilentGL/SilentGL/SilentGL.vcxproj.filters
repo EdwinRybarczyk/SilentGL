@@ -18,12 +18,24 @@
     <ClCompile Include="Source.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="SilentRasterizer.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SilentScreen.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SilentRenderer.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="window.h">
+    <ClInclude Include="SilentScreen.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="SilentScreen.h">
+    <ClInclude Include="SilentRasterizer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SilentRenderer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

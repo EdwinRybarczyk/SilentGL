@@ -139,11 +139,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="SilentRasterizer.c" />
+    <ClCompile Include="SilentRenderer.c" />
+    <ClCompile Include="SilentScreen.c" />
     <ClCompile Include="Source.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="SilentRasterizer.h" />
+    <ClInclude Include="SilentRenderer.h" />
     <ClInclude Include="SilentScreen.h" />
-    <ClInclude Include="window.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
