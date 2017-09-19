@@ -18,7 +18,7 @@ int silentConvertScreenCoordinateY(SilentScreen* screen, float coordinate)//
 {
 	int pixel = 0;
 	pixel = (int)coordinate * screen->height;
-		return pixel;
+	return pixel;
 }
 
 int silentConvertScreenCoordinateZ(SilentScreen* screen, float coordinate)//

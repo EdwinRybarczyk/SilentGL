@@ -5,7 +5,7 @@ SilentScreen* createSilentScreen(int width, int height)
 	screen->width = width;
 	screen->height = height;
 	screen->pixels = calloc(width * height * 4, 1);
-	screen->depthBuffer = calloc(width, height, 4);
+	screen->depthBuffer = calloc(width * height, 4);
 	return screen;
 }
 
