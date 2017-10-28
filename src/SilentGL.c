@@ -1,5 +1,6 @@
 #include "SilentGL.h"
 #include <stdlib.h>
+#include <math.h>
 void createSilentRasterizer(int screenWidth, int screenHeight)
 {
 	silentRasterizer = malloc(sizeof(SilentRasterizer));
@@ -55,12 +56,62 @@ void silentLoadIndices(int* indices, int indiceCount)
 	silentRasterizer->indiceCount = indiceCount;
 }
 
+void silentApplyProjection(int fov, float near, float far)
+{
+	for(int i = 0; i < silentRasterizer->vertexCount; i++)
+	{
+		float d2r = M_PI / 180;
+		float halfFov = (fov*d2r)/2;
+
+		silentRasterizer->vertices[i]->x /= (tan(halfFov));
+		silentRasterizer->vertices[i]->y /= (tan(halfFov));
+
+
+		//float nearmfar = near - far;
+		//float aspect = silentRasterizer->width/silentRasterizer->height;
+
+		//float yScal = 1 / tan(halfFov);
+		//float yScal = cos(halfFov)/sin(halfFov);
+		//float xScal = yScal / aspect;
+
+		//silentRasterizer->vertices[i]->x *= (xScal);
+		//printf("x:%f\n",silentRasterizer->vertices[i]->x);
+
+		//silentRasterizer->vertices[i]->y *= (yScal);
+		//printf("y:%f\n",silentRasterizer->vertices[i]->y);
+
+		//silentRasterizer->vertices[i]->z *=  
+		//	((((near+far)/nearmfar)) * (2*far*near)/nearmfar);
+		//printf("z:%f\n",silentRasterizer->vertices[i]->z);
+
+	}
+}
+
+void silentTranslate(float x, float y, float z)
+{
+	for(int i = 0; i < silentRasterizer->vertexCount; i++)
+	{
+		silentRasterizer->vertices[i]->x += x;
+		silentRasterizer->vertices[i]->y += y;
+		silentRasterizer->vertices[i]->z += z;
+	}
+}
+
+
+float silentScale(float x, float y, float z)
+{
+
+}
+
 void setPixel(int x, int y,char r, char g, char b)
 {
-	x = (x * 4) + (y * silentRasterizer->width*4);
-	silentRasterizer->pixels[x] = b;
-	silentRasterizer->pixels[x + 1] = g;
-	silentRasterizer->pixels[x + 2] = r;
+	if(!(x > silentRasterizer->width||x < 0))
+	{
+		x = (x * 4) + (y * silentRasterizer->width*4);
+		silentRasterizer->pixels[x] = b;
+		silentRasterizer->pixels[x + 1] = g;
+		silentRasterizer->pixels[x + 2] = r;
+	}
 }
 
 void silentRenderIndices()
@@ -92,16 +143,23 @@ void silentRenderIndices()
 		halfWidth = (0.5 * silentRasterizer->width);
 		halfHeight = (0.5 * silentRasterizer->height);
 
+		v0.x /= v0.z; v0.y /= v0.z;
+		v1.x /= v1.z; v1.y /= v1.z;
+		v2.x /= v2.z; v2.y /= v2.z;
+	
 
-		v0.x = halfWidth - (-v0.x * halfWidth);
-		v0.y = halfHeight - (v0.y * halfHeight);
+		v0.x = (halfWidth - (-v0.x * halfWidth));
+		v0.y = (halfHeight - (v0.y * halfHeight));
+		//v0.x = (1+v0.x) * halfWidth;v0.y = (1+v0.y) * halfHeight;
+		v1.x = (halfWidth - (-v1.x * halfWidth));
+		v1.y = (halfHeight - (v1.y * halfHeight));
+		//v1.x = (1+v1.x) * halfWidth;v1.y = (1+v1.y) * halfHeight;
 
-		v1.x = halfWidth - (-v1.x * halfWidth);
-		v1.y = halfHeight - (v1.y * halfHeight);
+		v2.x = (halfWidth - (-v2.x * halfWidth));
+		v2.y = (halfHeight - (v2.y * halfHeight));
+		//v2.x = (1+v2.x) * halfWidth;v2.y = (1+v2.y) * halfHeight;
 
-		v2.x = halfWidth - (-v2.x * halfWidth);
-		v2.y = halfHeight - (v2.y * halfHeight);
-
+	
 
 		//Rasterize triangle
 		
@@ -153,10 +211,10 @@ void silentRenderIndices()
 					cx3 = (cx3-cy3)/-zArea;
 
 					//Calculate Z buffer
-					float z = 1/((v0.z * cx1) + (v1.z * cx2) + (v2.z * cx3));
+					z = 1/((v0.z * cx2) + (v1.z * cx3) + (v2.z * cx1));
 
 					//Colour the triangle
-					setPixel(x,y,255*cx1,255*cx2,255*cx3);
+					setPixel(x,y,255*(cx2),255*(cx3),255*(cx1));
 				}
 			}
 		}

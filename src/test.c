@@ -1,6 +1,6 @@
 #include <SDL2/SDL.h>
 #include "SilentGL.h"
-
+/*
 vec3f* createVec3f(float x, float y, float z)
 {
 	
@@ -9,12 +9,12 @@ vec3f* createVec3f(float x, float y, float z)
 	vec->y = y;
 	vec->z = z;
 	return vec;
-}
+}*/
 
 int main()
 {
-	int screenWidth = 500;
-	int screenHeight = 500;
+	int screenWidth = 640;
+	int screenHeight = 480;
 	char* title = "Hey barbeque, michael here";
 
 	//SDL init
@@ -29,6 +29,8 @@ int main()
 		renderer, SDL_PIXELFORMAT_RGB888,
 		SDL_TEXTUREACCESS_STREAMING,screenWidth,screenHeight);
 
+	SDL_SetRenderDrawColor(renderer,0,0,0,255);
+
 	SDL_Event event;
 
 	//Rasterizer test
@@ -37,10 +39,10 @@ int main()
 	
 	int c = 0;
 	vec3f **vertex = malloc(sizeof(vec3f*) * 4);
-	vertex[c++] = createVec3f(-0.5,0.5,0.1);
-	vertex[c++] = createVec3f(-0.5,-0.5,0.5);
-	vertex[c++] = createVec3f(0.5,-0.5,1);
-	vertex[c++] = createVec3f(0.5,0.5,0.1);
+	vertex[c++] = createVec3f(0,0.5,5);
+	vertex[c++] = createVec3f(-0.5,0,5);
+	vertex[c++] = createVec3f(0.5,0,10);
+	vertex[c++] = createVec3f(0.5,0.5,0.9);
 
 	c = 0;
 	int *indices = malloc(sizeof(int) * 6);
@@ -53,6 +55,8 @@ int main()
 
 	silentLoadVertexCoordinates(vertex,4);
 	silentLoadIndices(indices,3);
+	//silentTranslate(-1,0,0.4);
+	silentApplyProjection(90,0.1,10);
 
 	//Main loop
 	char running = 1;
@@ -66,12 +70,15 @@ int main()
 	
 		//Rasterizing
 		silentRenderIndices();
+		//silentTranslate(0,0.001,0.1);
 		//SDL stuff
 		SDL_UpdateTexture(texture,NULL,pixels,screenWidth * 4);
 		SDL_RenderCopy(renderer,texture,NULL,NULL);
 		SDL_RenderPresent(renderer);
 		SDL_Delay(10);
 		SDL_RenderClear(renderer);
+		//Clear the buffer
+		memset(pixels,0,screenWidth * screenHeight * 4);
 	}
 
 	deleteSilentRasterizer();

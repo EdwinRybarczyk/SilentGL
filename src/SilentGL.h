@@ -1,23 +1,6 @@
-typedef struct vec2i
-{
-	int x,y;
-}vec2i;
-
-typedef struct vec2f
-{
-	float x,y;
-}vec2f;
-
-typedef struct vec3i
-{
-	int x,y,z;
-}vec3i;
-
-typedef struct vec3f
-{
-	float x,y,z;
-}vec3f;
-
+#include "SilentMath.h"
+#ifndef SILENT_RASTERIZER
+#define SILENT_RASTERIZER
 typedef struct SilentRasterizer
 {
 	char* pixels;
@@ -39,4 +22,7 @@ char* silentGetRenderBuffer();
 
 void silentLoadVertexCoordinates(vec3f** vertex, int vertexCount);
 void silentLoadIndices(int* indices, int indiceCount);
+void silentApplyProjection(int fov, float near, float far);
+void silentTranslate(float x, float y, float z);
 void silentRenderIndices();
+#endif
