@@ -64,8 +64,15 @@ typedef struct mat4f
 }mat4f;
 
 mat4f* createMat4f();
+mat4f* createIdentity();
 
 float min3(float x, float y, float z);
 
 float max3(float x, float y, float z);
+
+
+
+void multiplyVec4fMat4f(vec4f *vec,mat4f *mat);
+void addVec4f(vec4f *vec, mat4f* mat);
+
 #endif

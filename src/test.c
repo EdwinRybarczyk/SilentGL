@@ -39,10 +39,10 @@ int main()
 	
 	int c = 0;
 	vec3f **vertex = malloc(sizeof(vec3f*) * 4);
-	vertex[c++] = createVec3f(0,0.5,5);
+	vertex[c++] = createVec3f(0,0.5,2);
 	vertex[c++] = createVec3f(-0.5,0,5);
-	vertex[c++] = createVec3f(0.5,0,10);
-	vertex[c++] = createVec3f(0.5,0.5,0.9);
+	vertex[c++] = createVec3f(0.5,0,2);
+	vertex[c++] = createVec3f(0.5,0.5,2);
 
 	c = 0;
 	int *indices = malloc(sizeof(int) * 6);
@@ -56,7 +56,7 @@ int main()
 	silentLoadVertexCoordinates(vertex,4);
 	silentLoadIndices(indices,3);
 	//silentTranslate(-1,0,0.4);
-	silentApplyProjection(90,0.1,10);
+	silentApplyProjection(90,0.1,1000);
 
 	//Main loop
 	char running = 1;
@@ -70,7 +70,7 @@ int main()
 	
 		//Rasterizing
 		silentRenderIndices();
-		//silentTranslate(0,0.001,0.1);
+		silentTranslate(0,0.0,0.02);
 		//SDL stuff
 		SDL_UpdateTexture(texture,NULL,pixels,screenWidth * 4);
 		SDL_RenderCopy(renderer,texture,NULL,NULL);

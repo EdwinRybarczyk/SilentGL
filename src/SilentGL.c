@@ -66,22 +66,21 @@ void silentApplyProjection(int fov, float near, float far)
 		silentRasterizer->vertices[i]->x /= (tan(halfFov));
 		silentRasterizer->vertices[i]->y /= (tan(halfFov));
 
-
-		//float nearmfar = near - far;
-		//float aspect = silentRasterizer->width/silentRasterizer->height;
+//		float nearmfar = near - far;
+//		float aspect = silentRasterizer->width/silentRasterizer->height;
 
 		//float yScal = 1 / tan(halfFov);
-		//float yScal = cos(halfFov)/sin(halfFov);
-		//float xScal = yScal / aspect;
+//		float yScal = cos(halfFov)/sin(halfFov);
+//		float xScal = yScal / aspect;
 
-		//silentRasterizer->vertices[i]->x *= (xScal);
+//		silentRasterizer->vertices[i]->x *= (xScal);
 		//printf("x:%f\n",silentRasterizer->vertices[i]->x);
 
-		//silentRasterizer->vertices[i]->y *= (yScal);
+//		silentRasterizer->vertices[i]->y *= (yScal);
 		//printf("y:%f\n",silentRasterizer->vertices[i]->y);
 
-		//silentRasterizer->vertices[i]->z *=  
-		//	((((near+far)/nearmfar)) * (2*far*near)/nearmfar);
+//		silentRasterizer->vertices[i]->z *=  
+//			((((near+far)/nearmfar)) * (2*far*near)/nearmfar);
 		//printf("z:%f\n",silentRasterizer->vertices[i]->z);
 
 	}
@@ -103,14 +102,14 @@ float silentScale(float x, float y, float z)
 
 }
 
-void setPixel(int x, int y,char r, char g, char b)
+void setPixel(int x, int y, Colour colour);
 {
-	if(!(x > silentRasterizer->width||x < 0))
+	if(!((x > silentRasterizer->width||x < 0)&&(y > 0 && y < silentRasterizer->height)))
 	{
 		x = (x * 4) + (y * silentRasterizer->width*4);
-		silentRasterizer->pixels[x] = b;
-		silentRasterizer->pixels[x + 1] = g;
-		silentRasterizer->pixels[x + 2] = r;
+		silentRasterizer->pixels[x] = colour.r;
+		silentRasterizer->pixels[x + 1] = colour.g;
+		silentRasterizer->pixels[x + 2] = colour.b;
 	}
 }
 
@@ -133,11 +132,24 @@ void silentRenderIndices()
 
 	float halfWidth, halfHeight;
 
+	d2r = M_PI/180;
+
 	while(iterator < silentRasterizer->indiceCount)
 	{
+
+		vec3f colour1 = *createVec3f(0,0,1);
+		vec3f colour2 = *createVec3f(0,1,0);
+		vec3f colour3 = *createVec3f(1,0,0);
+
+		silentRasterizer->vertexShader();
+
 		v0 = *silentRasterizer->vertices[silentRasterizer->indices[iterator++]];
 		v1 = *silentRasterizer->vertices[silentRasterizer->indices[iterator++]];
 		v2 = *silentRasterizer->vertices[silentRasterizer->indices[iterator++]];
+
+		colour1.x /= v0.z; colour1.y /= v0.z; colour1.z /= v0.z;
+		colour2.x /= v1.z; colour2.y /= v1.z; colour2.z /= v1.z;
+		colour3.x /= v2.z; colour3.y /= v2.z; colour3.z /= v2.z;
 
 		//Convert to raster space
 		halfWidth = (0.5 * silentRasterizer->width);
@@ -147,19 +159,15 @@ void silentRenderIndices()
 		v1.x /= v1.z; v1.y /= v1.z;
 		v2.x /= v2.z; v2.y /= v2.z;
 	
-
 		v0.x = (halfWidth - (-v0.x * halfWidth));
 		v0.y = (halfHeight - (v0.y * halfHeight));
-		//v0.x = (1+v0.x) * halfWidth;v0.y = (1+v0.y) * halfHeight;
+
 		v1.x = (halfWidth - (-v1.x * halfWidth));
 		v1.y = (halfHeight - (v1.y * halfHeight));
-		//v1.x = (1+v1.x) * halfWidth;v1.y = (1+v1.y) * halfHeight;
+
 
 		v2.x = (halfWidth - (-v2.x * halfWidth));
 		v2.y = (halfHeight - (v2.y * halfHeight));
-		//v2.x = (1+v2.x) * halfWidth;v2.y = (1+v2.y) * halfHeight;
-
-	
 
 		//Rasterize triangle
 		
@@ -180,8 +188,11 @@ void silentRenderIndices()
 		c3y = v0.y - v2.y;
 		
 		//zBufferArea
+		float zArea = (-((c1x * (v2.y - v0.y)) - (c1y * (v2.x-v0.x))));
 		v0.z = 1/v0.z; v1.z = 1/v1.z; v2.z = 1/v2.z;
-		float zArea = (c1x * (v2.y - v0.y)) - (c1y * (v2.x-v0.x));
+
+
+
 		float z;
 
 		int y;
@@ -206,15 +217,26 @@ void silentRenderIndices()
 				{
 
 					//Calculate baryocentric coordinates
-					cx1 = (cx1-cy1)/-zArea;
-					cx2 = (cx2-cy2)/-zArea;
-					cx3 = (cx3-cy3)/-zArea;
+					cx1 = ((cx1-cy1)/zArea);
+					cx2 = ((cx2-cy2)/zArea);
+					cx3 = ((cx3-cy3)/zArea);
 
 					//Calculate Z buffer
 					z = 1/((v0.z * cx2) + (v1.z * cx3) + (v2.z * cx1));
+					//printf("%f\n",v1.z);
+					//printf("%f\n",v2.z);
+
+					cx1 *= z;
+					cx2 *= z;
+					cx3 *= z;
+
+					float r = cx1 * colour1.x + cx2 * colour2.x + cx3 * colour3.x;
+					float g = cx1 * colour1.y + cx2 * colour2.y + cx3 * colour3.y;
+					float b = cx1 * colour1.z + cx2 * colour2.z + cx3 * colour3.z;
+				//	r *= z; g *= z; b *= z;
 
 					//Colour the triangle
-					setPixel(x,y,255*(cx2),255*(cx3),255*(cx1));
+					setPixel(x,y,255*r,255*g,255*b);
 				}
 			}
 		}
