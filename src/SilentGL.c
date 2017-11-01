@@ -25,7 +25,7 @@ char* silentGetRenderBuffer()
 	return silentRasterizer->pixels;
 }
 
-
+/*
 float min(float x, float y, float z)
 {
 	float minimum = x;
@@ -42,7 +42,8 @@ float max(float x, float y, float z)
 	return maximum;
 
 }
-
+*/
+/*
 void silentLoadVertexCoordinates(vec3f** vertex, int vertexCount)
 {
 	silentRasterizer->vertices = malloc(sizeof(vec3f*)*vertexCount);
@@ -98,6 +99,46 @@ void silentTranslate(float x, float y, float z)
 
 
 float silentScale(float x, float y, float z)
+{
+
+}
+*/
+
+SilentVertexAttribute* silentCreateVao(int size)
+{
+	SilentVertexAttribute vao = 
+		malloc(sizeof(SilentVertexAttribute));
+	vao->vbo = 
+			malloc(sizeof(SilentVertexBuffer)*size);
+	vao->vboCount = 0;
+}
+
+void silentLoadVao(SilentVertexAttribute* vao)
+{
+
+}
+
+SilentVertexBuffer* silentCreateVbo(SilentVboType type)
+{
+
+}
+
+void silentLoadVbo(SilentVertexBuffer* buffer)
+{
+
+}
+
+void silentLoadVboToVao(SilentVertexBuffer* buffer)
+{
+
+}
+
+void silentLoadVertexShader(vsp shader)
+{
+
+}
+
+void silentLoadFragmentShader(fsp shader)
 {
 
 }
@@ -234,6 +275,8 @@ void silentRenderIndices()
 					float g = cx1 * colour1.y + cx2 * colour2.y + cx3 * colour3.y;
 					float b = cx1 * colour1.z + cx2 * colour2.z + cx3 * colour3.z;
 				//	r *= z; g *= z; b *= z;
+
+					Colour colour = silentRasterizer->fragmentShader(silentRasterizer->vao);
 
 					//Colour the triangle
 					setPixel(x,y,255*r,255*g,255*b);
