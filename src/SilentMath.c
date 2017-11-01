@@ -24,12 +24,12 @@ vec3i* createVec3i(int x, int y, int z)
 	return vec;
 }
 
-vec3f* createVec3f(float x, float y, float z)
+vec3f createVec3f(float x, float y, float z)
 {
-	vec3f *vec = malloc(sizeof(vec3f));
-	vec->x = x;
-	vec->y = y;
-	vec->z = z;
+	vec3f vec;
+	vec.x = x;
+	vec.y = y;
+	vec.z = z;
 	return vec;
 }
 
@@ -64,7 +64,7 @@ mat4f* createMat4f()
 	return &mat;
 }
 
-float min3(float x, float y, float z)
+float min3f(float x, float y, float z)
 {
 	float minimum = x;
 	if(y<minimum){minimum=y;}
@@ -72,9 +72,25 @@ float min3(float x, float y, float z)
 	return minimum;
 }
 
-float max3(float x, float y, float z)
+float max3f(float x, float y, float z)
 {
 	float maximum = x;
+	if(y>maximum){maximum=y;}
+	if(z>maximum){maximum=z;}
+	return maximum;
+}
+
+int min3i(int x, int y, int z)
+{
+	int minimum = x;
+	if(y<minimum){minimum=y;}
+	if(z<minimum){minimum=z;}
+	return minimum;
+}
+
+int max3i(int x, int y, int z)
+{
+	int maximum = x;
 	if(y>maximum){maximum=y;}
 	if(z>maximum){maximum=z;}
 	return maximum;

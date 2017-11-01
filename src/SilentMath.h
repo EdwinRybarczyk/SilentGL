@@ -31,7 +31,7 @@ typedef struct vec3f
 	float x,y,z;
 }vec3f;
 
-vec3f* createVec3f(float x, float y, float z);
+vec3f createVec3f(float x, float y, float z);
 
 //4 integer vector
 typedef struct vec4i
@@ -66,10 +66,14 @@ typedef struct mat4f
 mat4f* createMat4f();
 mat4f* createIdentity();
 
-float min3(float x, float y, float z);
-
-float max3(float x, float y, float z);
-
+//Smallest value out of 3 floats
+float min3f(float x, float y, float z);
+//Largest value out of 3 floats
+float max3f(float x, float y, float z);
+//Smallest value out of 3 integers
+int min3i(int x, int y, int z);
+//Largest value out of 3 integers
+int max3i(int x, int y, int z);
 
 
 void multiplyVec4fMat4f(vec4f *vec,mat4f *mat);

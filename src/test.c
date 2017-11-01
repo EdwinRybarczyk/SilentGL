@@ -1,15 +1,5 @@
 #include <SDL2/SDL.h>
 #include "SilentGL.h"
-/*
-vec3f* createVec3f(float x, float y, float z)
-{
-	
-	vec3f* vec = malloc(sizeof(vec3f));
-	vec->x = x;
-	vec->y = y;
-	vec->z = z;
-	return vec;
-}*/
 
 int main()
 {
@@ -36,9 +26,9 @@ int main()
 	//Rasterizer test
 	createSilentRasterizer(screenWidth,screenHeight);
 	char* pixels = silentGetRenderBuffer();
-	
+	//declare data
 	int c = 0;
-	vec3f **vertex = malloc(sizeof(vec3f*) * 4);
+	vec3f *vertex = malloc(sizeof(vec3f) * 4);
 	vertex[c++] = createVec3f(0,0.5,2);
 	vertex[c++] = createVec3f(-0.5,0,5);
 	vertex[c++] = createVec3f(0.5,0,2);
@@ -52,11 +42,32 @@ int main()
 	indices[c++] = 0;
 	indices[c++] = 2;
 	indices[c++] = 3;
+	//shaders
+	void vertexShader(SilentVertexArray* vao)
+	{
+		//printf("%i\n",vao->vbo);
+	}
 
-	silentLoadVertexCoordinates(vertex,4);
-	silentLoadIndices(indices,3);
-	//silentTranslate(-1,0,0.4);
-	silentApplyProjection(90,0.1,1000);
+	Colour fragmentShader(SilentVertexArray* vao)
+	{
+		Colour c = {0,255,255};
+		return c;
+	}
+	
+	//printf("%f\n",vertex[0].y);
+
+	//Loading data
+	silentLoadVertexShader(vertexShader);
+	silentLoadFragmentShader(fragmentShader);
+	SilentVertexArray* vao = silentCreateVao(2);
+	SilentVertexBuffer* vert = silentCreateVbo(SILENT_VBO_VERTEX,4);
+	vert->vector3f = vertex;
+	SilentVertexBuffer* ind = silentCreateVbo(SILENT_VBO_INDICE,3);
+	ind->integer = indices;
+	silentLoadVao(vao);
+	silentLoadVbo(vao,vert);
+	silentLoadVbo(vao,ind);
+	
 
 	//Main loop
 	char running = 1;
@@ -70,7 +81,7 @@ int main()
 	
 		//Rasterizing
 		silentRenderIndices();
-		silentTranslate(0,0.0,0.02);
+//		silentTranslate(0,0.0,0.02);
 		//SDL stuff
 		SDL_UpdateTexture(texture,NULL,pixels,screenWidth * 4);
 		SDL_RenderCopy(renderer,texture,NULL,NULL);
@@ -80,7 +91,18 @@ int main()
 		//Clear the buffer
 		memset(pixels,0,screenWidth * screenHeight * 4);
 	}
-
+	
+	free(vertex);
+	vertex = NULL;
+	free(indices);
+	indices = NULL;
+	free(vert);
+	vert = NULL;
+	free(ind);
+	ind = NULL;
 	deleteSilentRasterizer();
+	SDL_DestroyWindow(window);
+
+	//deleteSilentRasterizer();
 	return 0;
 }

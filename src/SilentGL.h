@@ -16,7 +16,7 @@ typedef enum SilentVboType
 	SILENT_VBO_VEC3I,
 	SILENT_VBO_VEC2F,
 	SILENT_VBO_VEC2I,
-	SILENT_VBO_VERTEX_COORD,
+	SILENT_VBO_VERTEX,
 	SILENT_VBO_INDICE
 }SilentVboType;
 
@@ -31,6 +31,7 @@ typedef struct SilentVertexBuffer
 		vec3i *vector3i;
 		vec2f *vector2f;
 		vec2i *vector2i;
+		int* integer;
 	};
 	//Type of the vertex buffer
 	SilentVboType vboType;
@@ -41,18 +42,18 @@ typedef struct SilentVertexBuffer
 }SilentVertexBuffer;
 
 //Vertex array
-typedef struct SilentVertexAttribute
+typedef struct SilentVertexArray
 {	
 	//Array of VBOs
 	SilentVertexBuffer *vbo;
 	//Number of VBOs
 	int vboCount;
-}SilentVertexAttribute;
+}SilentVertexArray;
 
 //vertex shader pointer
-typedef void (*vsp)(SilentVertexAttribute* attrib);
+typedef void (*vsp)();
 //fragment shader pointer
-typedef Colour (*fsp)(SilentVertexAttribute* attrib);
+typedef Colour (*fsp)();
 
 //Rasterization manager
 typedef struct SilentRasterizer
@@ -62,7 +63,7 @@ typedef struct SilentRasterizer
 	//Size of the screen in pixels
 	int width,height;
 	//Vertex Attributes
-	SilentVertexAttribute *vao;
+	SilentVertexArray *vao;
 	//Vertex shader
 	vsp vertexShader;
 	//Fragment shader
@@ -85,16 +86,13 @@ void silentLoadVertexCoordinates(vec3f** vertex, int vertexCount);
 void silentLoadIndices(int* indices, int indiceCount);
 */
 //Create a new VAO
-SilentVertexAttribute* silentCreateVao(int size);
+SilentVertexArray* silentCreateVao(int size);
 //Load a new VAO
-void silentLoadVao(SilentVertexAttribute* vao);
+void silentLoadVao(SilentVertexArray* vao);
 //Create a new VBO
-SilentVertexBuffer* silentCreateVBO(SilentVboType type);
-//Load a new VBO to the rasterizer VAO
-void silentLoadVbo(SilentVertexBuffer* vbo);
-//Load VBO to a VAO
-void silentLoadVboToVao(SilentVertexAttribute* vao,
-						SilentVertexBuffer* vbo);
+SilentVertexBuffer* silentCreateVbo(SilentVboType type,long size);
+//Load a new VBO to a VAO
+void silentLoadVbo(SilentVertexArray* vao,SilentVertexBuffer* vbo);
 //Load the vertex shader
 void silentLoadVertexShader(vsp shader);
 //Load the fragment shader
