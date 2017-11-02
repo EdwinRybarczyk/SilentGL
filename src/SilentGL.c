@@ -33,7 +33,7 @@ char* silentGetRenderBuffer()
 
 SilentVertexBuffer* silentCreateVbo(SilentVboType type,long size)
 {
-	SilentVertexBuffer* vbo = malloc(sizeof(SilentVertexArray));
+	SilentVertexBuffer* vbo = malloc(sizeof(SilentVertexBuffer));
 	vbo->vboType = type;
 	vbo->vboCount = size;
 	vbo->vboCounter = 0;
