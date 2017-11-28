@@ -53,8 +53,6 @@ int main()
 		Colour c = {0,255,255};
 		return c;
 	}
-	
-	//printf("%f\n",vertex[0].y);
 
 	//Loading data
 	silentLoadVertexShader(vertexShader);
@@ -72,6 +70,7 @@ int main()
 	//Main loop
 	char running = 1;
 	while(running)
+	//for(int i = 0; i < 60; i++)
 	{
 		//SDL event stuff
 		while(SDL_PollEvent(&event))
@@ -86,7 +85,7 @@ int main()
 		SDL_UpdateTexture(texture,NULL,pixels,screenWidth * 4);
 		SDL_RenderCopy(renderer,texture,NULL,NULL);
 		SDL_RenderPresent(renderer);
-		SDL_Delay(10);
+		SDL_Delay(0);
 		SDL_RenderClear(renderer);
 		//Clear the buffer
 		memset(pixels,0,screenWidth * screenHeight * 4);
