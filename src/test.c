@@ -1,6 +1,18 @@
 #include <SDL2/SDL.h>
 #include "SilentGL.h"
 
+//shaders
+void vertexShader(SilentVertexArray* vao)
+{
+	//printf("%i\n",vao->vbo);
+}
+
+Colour fragmentShader(SilentVertexArray* vao)
+{
+	Colour c = {0,255,255};
+	return c;
+}
+
 int main()
 {
 	int screenWidth = 640;
@@ -42,17 +54,8 @@ int main()
 	indices[c++] = 0;
 	indices[c++] = 2;
 	indices[c++] = 3;
-	//shaders
-	void vertexShader(SilentVertexArray* vao)
-	{
-		//printf("%i\n",vao->vbo);
-	}
 
-	Colour fragmentShader(SilentVertexArray* vao)
-	{
-		Colour c = {0,255,255};
-		return c;
-	}
+
 
 	//Loading data
 	silentLoadVertexShader(vertexShader);

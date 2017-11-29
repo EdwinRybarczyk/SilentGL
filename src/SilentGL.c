@@ -134,9 +134,9 @@ void silentRenderIndices()
 			*silentRasterizer->vao->vbo[1].integer + iterator++];
 
 		//Perspective divide
-		//v0.x /= v0.z; v0.y /= v0.z;
-		//v1.x /= v1.z; v1.y /= v1.z;
-		//v2.x /= v2.z; v2.y /= v2.z;
+		v0.x /= v0.z; v0.y /= v0.z;
+		v1.x /= v1.z; v1.y /= v1.z;
+		v2.x /= v2.z; v2.y /= v2.z;
 
 		//Convert to raster space
 		halfWidth = (0.5 * silentRasterizer->width);
