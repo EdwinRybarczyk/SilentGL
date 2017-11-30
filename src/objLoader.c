@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <ctype.h>
 
-void loadVert(char* data, int dataSize, int bufferSize)
+void loadVert(char* data, int dataSize, int* bufferSize)
 {
 
 }
@@ -34,7 +34,7 @@ objData loadModelOBJ(char* path)
         
         if(line[0] == 'v' && isspace(line[1]))
         {
-            
+            loadVert(line, size, &vBufferCount);
         }
 
     }
