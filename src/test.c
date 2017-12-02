@@ -1,5 +1,6 @@
 #include <SDL2/SDL.h>
 #include "SilentGL.h"
+#include "objLoader.h"
 
 //shaders
 void vertexShader(SilentVertexArray* vao)
@@ -58,6 +59,7 @@ int main()
 
 
 	//Loading data
+	objData model = loadModelOBJ("wolfe.obj");
 	silentLoadVertexShader(vertexShader);
 	silentLoadFragmentShader(fragmentShader);
 	SilentVertexArray* vao = silentCreateVao(2);
