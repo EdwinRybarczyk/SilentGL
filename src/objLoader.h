@@ -7,6 +7,8 @@ typedef struct objData
     int iCount;
     float* textureCoords;
     int tCount;
+    float* normals;
+    int nCount;
     char success;
 }objData;
 

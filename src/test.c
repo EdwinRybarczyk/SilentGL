@@ -25,8 +25,11 @@ int main()
 		title, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
 		screenWidth,screenHeight, SDL_WINDOW_SHOWN);
 
+	//SDL_Renderer* renderer = SDL_CreateRenderer(
+	//window, -1, SDL_RENDERER_ACCELERATED || SDL_RENDERER_PRESENTVSYNC);
+	
 	SDL_Renderer* renderer = SDL_CreateRenderer(
-		window, -1, /*SDL_RENDERER_ACCELERATED ||*/ SDL_RENDERER_PRESENTVSYNC);
+		window, -1, SDL_RENDERER_PRESENTVSYNC);
 		
 	SDL_Texture* texture = SDL_CreateTexture(
 		renderer, SDL_PIXELFORMAT_RGB888,
@@ -60,6 +63,7 @@ int main()
 
 	//Loading data
 	objData model = loadModelOBJ("wolfe.obj");
+	return 0;
 	silentLoadVertexShader(vertexShader);
 	silentLoadFragmentShader(fragmentShader);
 	SilentVertexArray* vao = silentCreateVao(2);
