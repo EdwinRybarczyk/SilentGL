@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
+#include <locale.h>
 
 //Vertice loader
 void loadVert(objData* objData, char* data, int dataSize, int* bufferSize)
@@ -10,10 +11,11 @@ void loadVert(objData* objData, char* data, int dataSize, int* bufferSize)
     //Number buffer
     char* buffer = malloc(25);
     //Iterate through line
+    int numCount = 0;
     for(int i = 0; i < dataSize; i++)
     {
         //Check whether its digit
-        if(isdigit(data[i]))
+        if((isdigit(data[i]) || data[i] == '-')/* && numCount < 3*/)
         {
             //Prepare variable for value
             char* value;
@@ -51,7 +53,9 @@ void loadVert(objData* objData, char* data, int dataSize, int* bufferSize)
             //Append the float value   
             objData->vertices[*bufferSize] = atof(value);
             //printf("%f \n",objData->vertices[*bufferSize]);
-            objData->vCount++;
+            objData->vCount+=1;
+            *bufferSize+=1;
+            numCount+=1;
         }
     }
 }
@@ -62,10 +66,11 @@ void loadTex(objData* objData, char* data, int dataSize, int* bufferSize)
     //Number buffer
     char* buffer = malloc(25);
     //Iterate through line
+    int numCount = 0;
     for(int i = 0; i < dataSize; i++)
     {
         //Check whether its digit
-        if(isdigit(data[i]))
+        if((isdigit(data[i]) || data[i] == '-')&&numCount < 2)
         {
             //Prepare variable for value
             char* value;
@@ -103,7 +108,9 @@ void loadTex(objData* objData, char* data, int dataSize, int* bufferSize)
             //Append the float value   
             objData->textureCoords[*bufferSize] = atof(value);
             //printf("%f \n",objData->textureCoords[*bufferSize]);
-            objData->tCount++;
+            objData->tCount+=1;
+            *bufferSize+=1;
+            numCount+=1;
         }
     }
 }
@@ -114,10 +121,11 @@ void loadNorm(objData* objData, char* data, int dataSize, int* bufferSize)
     //Number buffer
     char* buffer = malloc(25);
     //Iterate through line
+    int numCount = 0;
     for(int i = 0; i < dataSize; i++)
     {
         //Check whether its digit
-        if(isdigit(data[i]))
+        if((isdigit(data[i]) || data[i] == '-')&&numCount<3)
         {
             //Prepare variable for value
             char* value;
@@ -155,21 +163,24 @@ void loadNorm(objData* objData, char* data, int dataSize, int* bufferSize)
             //Append the float value   
             objData->normals[*bufferSize] = atof(value);
             //printf("%f \n",objData->normals[*bufferSize]);
-            objData->nCount++;
+            objData->nCount+=1;
+            *bufferSize+=1;
+            numCount+=1;
         }
     }
 }
 
 //Indice loader
-void loadInd(objData* objData, char* data, int dataSize, int* bufferSize)
+void loadFace(char* objData, int *c, char* data, int dataSize, int* bufferSize)
 {
     //Number buffer
     char* buffer = malloc(25);
     //Iterate through line
+    int numCount = 0;
     for(int i = 0; i < dataSize; i++)
     {
         //Check whether its digit
-        if(isdigit(data[i]))
+        if(isdigit(data[i]) && numCount < 9)
         {
             //Prepare variable for value
             char* value;
@@ -195,33 +206,41 @@ void loadInd(objData* objData, char* data, int dataSize, int* bufferSize)
             
             if(*bufferSize % 500 == 0)
             {
-                void* temp = realloc(objData->indices, sizeof(float)*500 +
+                void* temp = realloc(objData, sizeof(float)*500 +
                     *(bufferSize)*sizeof(float));  
             
                 if(temp == NULL)
                 {
                     exit(0);
                 }
-                objData->indices = temp;
+                objData = temp;
             }
             //Append the float value   
-            objData->indices[*bufferSize] = atoi(value);
-            //printf("%i \n",objData->indices[*bufferSize]);
-            objData->iCount++;
+            objData[*bufferSize] = (atoi(value))-1;
+            *bufferSize+=1;
+            *c += 1;
+            numCount+=1;
         }
     }
 }
 
 objData loadModelOBJ(char* path)
 {
+    //char* locale = setlocale(LC_ALL,"en_UK.utf8");
     objData data;
     data.vertices = malloc(501*sizeof(float));
     data.vCount = 0;
     data.textureCoords = malloc(501*sizeof(float));
     data.tCount = 0;
-    data.indices = malloc(501*sizeof(float));
+    data.indices = malloc(501*sizeof(int));
     data.iCount = 0;
+    data.normals = malloc(501*sizeof(float));
+    data.nCount = 0;
     data.success = 1;
+
+    char* faces = malloc(500*sizeof(int));
+    int fCount = 0;
+
     FILE* f = fopen(path,"r");
     if(f==NULL)
     {
@@ -236,6 +255,8 @@ objData loadModelOBJ(char* path)
     int vBufferCount = 0;
     int iBufferCount = 0;
     int tBufferCount = 0;
+    int nBufferCount = 0;
+    int fBufferCount = 0;
 
     //Load data
     while(getline(&line,&size,f) != -1)
@@ -245,26 +266,26 @@ objData loadModelOBJ(char* path)
         {
             loadVert(&data, line, size, &vBufferCount);
         }
-
+        
         if(line[0] == 'v' && line[1] == 't')
         {
-            loadTex(&data, line, size, &iBufferCount);
+            loadTex(&data, line, size, &tBufferCount);
         }
 
         if(line[0] == 'v' && line[1] == 'n')
         {
-            loadNorm(&data, line, size, &iBufferCount);
+            loadNorm(&data, line, size, &nBufferCount);
         }
 
         if(line[0] == 'f' && isspace(line[1]))
         {
-            loadInd(&data, line, size, &iBufferCount);
+            loadFace(faces,&fCount,line, size, &fBufferCount);
         }
-
+        
     }
-    //Reallocate to size
-    //Realloc vertices
-    void* temp;
+    //Reallocate to size and fix indices
+    float* temp;
+    //Realloc vertices  
     temp = realloc(data.vertices, data.vCount*sizeof(float));  
     if(temp == NULL)
     {
@@ -272,14 +293,17 @@ objData loadModelOBJ(char* path)
         return data;
     }
     data.vertices = temp;
-    //Realloc indices
-    temp = realloc(data.indices, data.iCount*sizeof(int));  
-    if(temp == NULL)
+
+    //generate indices
+    
+    
+    data.iCount = fCount/3;
+    data.indices = malloc(data.iCount*sizeof(int));
+    for(int i = 0; i < data.iCount; i++)
     {
-        data.success = 0;
-        return data;
+        data.indices[i] = faces[i*3];
     }
-    data.indices = temp;
+
     //Reallocate texture coordinates
     temp = realloc(data.textureCoords, data.tCount*sizeof(float));  
     if(temp == NULL)
@@ -287,7 +311,18 @@ objData loadModelOBJ(char* path)
         data.success = 0;
         return data;
     }
-    data.textureCoords = temp;
+    data.textureCoords = malloc(data.tCount*sizeof(float));
+    for(int i = 0; i < fCount; i++)
+    {
+        int v = faces[i*3];
+        int t = faces[i*3+1];
+        memcpy(
+            &data.textureCoords[v],
+            &temp[faces[t]],
+            2*sizeof(float)
+        );
+    }
+    //free(temp);
     //Reallocate normals
     temp = realloc(data.normals, data.nCount*sizeof(float));  
     if(temp == NULL)
@@ -295,7 +330,18 @@ objData loadModelOBJ(char* path)
         data.success = 0;
         return data;
     }
-    data.normals = temp;
+    data.normals = malloc(data.nCount*sizeof(float));
+    for(int i = 0; i < fCount; i++)
+    {
+        int v = faces[i*3];
+        int t = faces[i*3+2];
+        memcpy(
+            &data.normals[v],
+            &temp[faces[t]],
+            3*sizeof(float)
+        );
+    }
+    
 
     return data;
 }

@@ -1,10 +1,13 @@
 #include "SilentGL.h"
 #include <stdlib.h>
+#include <stdio.h>
 #include <math.h>
+#include <string.h>
 void createSilentRasterizer(int screenWidth, int screenHeight)
 {
 	silentRasterizer = malloc(sizeof(SilentRasterizer));
 	silentRasterizer->pixels = malloc(screenWidth*screenHeight*4);
+	silentRasterizer->zBuffer = malloc(screenWidth*screenHeight*4);
 	silentRasterizer->width = screenWidth;
 	silentRasterizer->height = screenHeight;
 }
@@ -28,8 +31,6 @@ char* silentGetRenderBuffer()
 {
 	return silentRasterizer->pixels;
 }
-
-
 
 SilentVertexBuffer* silentCreateVbo(SilentVboType type,long size)
 {
@@ -86,14 +87,21 @@ void silentLoadFragmentShader(fsp shader)
 	silentRasterizer->fragmentShader = shader;
 }
 
-void setPixel(int x, int y, Colour colour)
+void setPixel(int x, int y, int z, Colour colour)
 {
-	if(!((x > silentRasterizer->width||x < 0)&&(y > 0 && y < silentRasterizer->height)))
+	//if(silentRasterizer->zBuffer[
+	//	y*silentRasterizer->width + x
+	//] < x)
 	{
-		x = (x * 4) + (y * silentRasterizer->width*4);
-		silentRasterizer->pixels[x] = colour.b;
-		silentRasterizer->pixels[x + 1] = colour.g;
-		silentRasterizer->pixels[x + 2] = colour.r;
+
+		if(!((x > silentRasterizer->width || x < 0) &&
+			(y > 0 && y < silentRasterizer->height)) )
+		{
+			x = (x * 4) + (y * silentRasterizer->width*4);
+			silentRasterizer->pixels[x] = colour.b;
+			silentRasterizer->pixels[x + 1] = colour.g;
+			silentRasterizer->pixels[x + 2] = colour.r;
+		}
 	}
 }
 
@@ -120,20 +128,27 @@ void silentRenderIndices()
 
 	while(iterator < silentRasterizer->vao->vbo[1].vboCount)
 	{
+		memcpy(&v0,&silentRasterizer->vao->vbo[0].floatingPoint[
+			silentRasterizer->vao->vbo[1].integer[iterator]*3],
+			12
+		);
+		iterator += 1;
+		silentRasterizer->vertexShader(&v0);
 
-		silentRasterizer->vertexShader();
-		silentRasterizer->vao->vbo[0].vboCounter++;
+		memcpy(&v1,&silentRasterizer->vao->vbo[0].floatingPoint[
+			silentRasterizer->vao->vbo[1].integer[iterator]*3],
+			12
+		);
+		iterator += 1;
+		silentRasterizer->vertexShader(&v1);
 
-		v0 = silentRasterizer->vao->vbo[0].vector3f[
-			*silentRasterizer->vao->vbo[1].integer + iterator++];
-	
-		v1 = silentRasterizer->vao->vbo[0].vector3f[
-			*silentRasterizer->vao->vbo[1].integer + iterator++];
-
-		v2 = silentRasterizer->vao->vbo[0].vector3f[
-			*silentRasterizer->vao->vbo[1].integer + iterator++];
-
-		//Perspective divide
+		memcpy(&v2,&silentRasterizer->vao->vbo[0].floatingPoint[
+			silentRasterizer->vao->vbo[1].integer[iterator]*3],
+			12
+		);
+		iterator += 1;
+		silentRasterizer->vertexShader(&v2);
+		
 		v0.x /= v0.z; v0.y /= v0.z;
 		v1.x /= v1.z; v1.y /= v1.z;
 		v2.x /= v2.z; v2.y /= v2.z;
@@ -194,26 +209,27 @@ void silentRenderIndices()
 				cx3 = c3y * (x - v2.x);
 				cx3++;
 
+				
 				if((cy1 < cx1)&&(cy2 < cx2)&&(cy3 < cx3))
 				{
-
 					//Calculate baryocentric coordinates
-					cx1 = ((cx1-cy1)/zArea);
-					cx2 = ((cx2-cy2)/zArea);
-					cx3 = ((cx3-cy3)/zArea);
+					//cx1 = ((cx1-cy1)/zArea);
+					//cx2 = ((cx2-cy2)/zArea);
+					//cx3 = ((cx3-cy3)/zArea);
 
 					//Calculate Z buffer
-					z = 1/((v0.z * cx2) + (v1.z * cx3) + (v2.z * cx1));
+					//z = 1/((v0.z * cx2) + (v1.z * cx3) + (v2.z * cx1));
 
-					cx1 *= z;
-					cx2 *= z;
-					cx3 *= z;
+					//cx1 *= z;
+					//cx2 *= z;
+					//cx3 *= z;
 
-					Colour colour = silentRasterizer->fragmentShader();
-
+					//Colour colour = silentRasterizer->fragmentShader();
+					Colour colour = {255,255,255};
 					//Colour the triangle
-					setPixel(x,y,colour);
+					setPixel(x,y,z,colour);
 				}
+				
 			}
 		}
 	}

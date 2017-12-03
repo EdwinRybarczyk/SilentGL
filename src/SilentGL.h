@@ -16,8 +16,10 @@ typedef enum SilentVboType
 	SILENT_VBO_VEC3I,
 	SILENT_VBO_VEC2F,
 	SILENT_VBO_VEC2I,
+	SILENT_VBO_INDICE,
 	SILENT_VBO_VERTEX,
-	SILENT_VBO_INDICE
+	SILENT_VBO_INTEGER,
+	SILENT_VBO_FLOAT
 }SilentVboType;
 
 //Vertex buffer
@@ -31,7 +33,8 @@ typedef struct SilentVertexBuffer
 		vec3i *vector3i;
 		vec2f *vector2f;
 		vec2i *vector2i;
-		int* integer;
+		int *integer;
+		float *floatingPoint;
 	};
 	//Type of the vertex buffer
 	SilentVboType vboType;
@@ -51,7 +54,7 @@ typedef struct SilentVertexArray
 }SilentVertexArray;
 
 //vertex shader pointer
-typedef void (*vsp)();
+typedef void (*vsp)(vec3f* v);
 //fragment shader pointer
 typedef Colour (*fsp)();
 
@@ -60,6 +63,8 @@ typedef struct SilentRasterizer
 {
 	//Drawing buffer
 	char* pixels;
+	//Depth buffer
+	float* zBuffer;
 	//Size of the screen in pixels
 	int width,height;
 	//Vertex Attributes

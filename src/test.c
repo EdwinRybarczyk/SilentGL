@@ -3,12 +3,14 @@
 #include "objLoader.h"
 
 //shaders
-void vertexShader(SilentVertexArray* vao)
+void vertexShader(vec3f* v)
 {
-	//printf("%i\n",vao->vbo);
+	//v->x += 0.5;
+	v->z += 2;
+	//printf("%f %f %f\n",v->x,v->y,v->z);
 }
 
-Colour fragmentShader(SilentVertexArray* vao)
+Colour fragmentShader()
 {
 	Colour c = {0,255,255};
 	return c;
@@ -42,44 +44,41 @@ int main()
 	//Rasterizer test
 	createSilentRasterizer(screenWidth,screenHeight);
 	char* pixels = silentGetRenderBuffer();
-	//declare data
-	int c = 0;
-	vec3f *vertex = malloc(sizeof(vec3f) * 4);
-	vertex[c++] = createVec3f(0,0.5,2);
-	vertex[c++] = createVec3f(-0.5,0,5);
-	vertex[c++] = createVec3f(0.5,0,2);
-	vertex[c++] = createVec3f(0.5,0.5,2);
-
-	c = 0;
-	int *indices = malloc(sizeof(int) * 6);
-	indices[c++] = 0;
-	indices[c++] = 1;
-	indices[c++] = 2;
-	indices[c++] = 0;
-	indices[c++] = 2;
-	indices[c++] = 3;
-
-
-
+	
 	//Loading data
-	objData model = loadModelOBJ("wolfe.obj");
-	return 0;
+	//Load object
+	objData model = loadModelOBJ("untitled.obj");
+	//Load shaders
 	silentLoadVertexShader(vertexShader);
 	silentLoadFragmentShader(fragmentShader);
+	//Create VAO
 	SilentVertexArray* vao = silentCreateVao(2);
-	SilentVertexBuffer* vert = silentCreateVbo(SILENT_VBO_VERTEX,4);
-	vert->vector3f = vertex;
-	SilentVertexBuffer* ind = silentCreateVbo(SILENT_VBO_INDICE,3);
-	ind->integer = indices;
+	//Create vertex VBO
+	SilentVertexBuffer* vert = 
+		silentCreateVbo(SILENT_VBO_VERTEX,model.vCount/**sizeof(float)*/);
+	vert->floatingPoint = model.vertices;
+	//Create indice VBO
+	SilentVertexBuffer* ind = 
+		silentCreateVbo(SILENT_VBO_INDICE,model.iCount/**sizeof(int)*/);
+	ind->integer = model.indices;
+	//for(int i = 0; i < model.iCount; i++)
+	//{
+	//	printf("%f\n",vert->floatingPoint[
+	//		ind->integer[i]*3
+	//	]);
+	//}
+	//Load VAO to rasterizer
 	silentLoadVao(vao);
+	//Load the 2 VBOs
 	silentLoadVbo(vao,vert);
 	silentLoadVbo(vao,ind);
 	
-
+	
+	
 	//Main loop
 	char running = 1;
-	while(running)
-	//for(int i = 0; i < 60; i++)
+	//while(running)
+	for(int i = 0; i < 60; i++)
 	{
 		//SDL event stuff
 		while(SDL_PollEvent(&event))
@@ -89,27 +88,27 @@ int main()
 	
 		//Rasterizing
 		silentRenderIndices();
-//		silentTranslate(0,0.0,0.02);
 		//SDL stuff
 		SDL_UpdateTexture(texture,NULL,pixels,screenWidth * 4);
 		SDL_RenderCopy(renderer,texture,NULL,NULL);
 		SDL_RenderPresent(renderer);
-		SDL_Delay(0);
+		SDL_Delay(1);
 		SDL_RenderClear(renderer);
 		//Clear the buffer
 		memset(pixels,0,screenWidth * screenHeight * 4);
+		//printf("done frame\n");
 	}
 	
-	free(vertex);
-	vertex = NULL;
-	free(indices);
-	indices = NULL;
-	free(vert);
-	vert = NULL;
-	free(ind);
-	ind = NULL;
+	//free(model.vertices);
+	//model.vertices = NULL;
+	//free(model.indices);
+	//model.indices = NULL;
+	//free(model.normals);
+	//model.normals = NULL;
+	//free(model.textureCoords);
+	//model.textureCoords = NULL;
 	deleteSilentRasterizer();
-	SDL_DestroyWindow(window);
+	//SDL_DestroyWindow(window);
 
 	//deleteSilentRasterizer();
 	return 0;
