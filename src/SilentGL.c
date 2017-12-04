@@ -60,20 +60,20 @@ void silentLoadVbo(SilentVertexArray* vao, SilentVertexBuffer* vbo)
 	if(vbo->vboType == SILENT_VBO_VERTEX)
 	{
 		vao->vbo[0] = *vbo;
-		vao->vboCount++;
+		vao->vboCount+=1;
 	}
 
 	//Indices will always be loaded into second vbo in a vao
 	else if(vbo->vboType == SILENT_VBO_INDICE)
 	{
 		vao->vbo[1] = *vbo;
-		vao->vboCount++;
+		vao->vboCount+=1;
 	}
 	//Any other data is managed by shaders so no need
 	//for the rasterizer to know which is which
 	else
 	{
-		vao->vbo[vao->vboCount++] = *vbo;
+		vao->vbo[vao->vboCount+=1] = *vbo;
 	}
 }
 
@@ -87,11 +87,12 @@ void silentLoadFragmentShader(fsp shader)
 	silentRasterizer->fragmentShader = shader;
 }
 
-void setPixel(int x, int y, int z, Colour colour)
+void setPixel(int x, int y, float z, Colour colour)
 {
 	//if(silentRasterizer->zBuffer[
 	//	y*silentRasterizer->width + x
-	//] < x)
+	//] > z)
+	//printf("%f\n",z);
 	{
 
 		if(!((x > silentRasterizer->width || x < 0) &&
@@ -213,9 +214,9 @@ void silentRenderIndices()
 				if((cy1 < cx1)&&(cy2 < cx2)&&(cy3 < cx3))
 				{
 					//Calculate baryocentric coordinates
-					//cx1 = ((cx1-cy1)/zArea);
-					//cx2 = ((cx2-cy2)/zArea);
-					//cx3 = ((cx3-cy3)/zArea);
+					cx1 = ((cx1-cy1)/zArea);
+					cx2 = ((cx2-cy2)/zArea);
+					cx3 = ((cx3-cy3)/zArea);
 
 					//Calculate Z buffer
 					//z = 1/((v0.z * cx2) + (v1.z * cx3) + (v2.z * cx1));
@@ -224,8 +225,8 @@ void silentRenderIndices()
 					//cx2 *= z;
 					//cx3 *= z;
 
-					//Colour colour = silentRasterizer->fragmentShader();
-					Colour colour = {255,255,255};
+					Colour colour = silentRasterizer->fragmentShader();
+					//Colour colour = {255,255,255};
 					//Colour the triangle
 					setPixel(x,y,z,colour);
 				}

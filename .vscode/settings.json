@@ -1,0 +1,12 @@
+{
+    "files.associations": {
+        "array": "c",
+        "string_view": "c",
+        "istream": "c",
+        "optional": "c",
+        "ostream": "c",
+        "ratio": "c",
+        "system_error": "c",
+        "type_traits": "c"
+    }
+}

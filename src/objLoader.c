@@ -6,7 +6,7 @@
 #include <locale.h>
 
 //Vertice loader
-void loadVert(objData* objData, char* data, int dataSize, int* bufferSize)
+void loadVert(objData* objData, char* data, int dataSize)
 {
     //Number buffer
     char* buffer = malloc(25);
@@ -27,9 +27,9 @@ void loadVert(objData* objData, char* data, int dataSize, int* bufferSize)
                 //Add character to the buffer
                 buffer[count] = data[i];
                 //Increase iterator
-                i++;
+                i+=1;
                 //Increase character count
-                count++;
+                count+=1;
             }
             //Allocate space for the value and terminator
             value = malloc(count+1);
@@ -39,29 +39,30 @@ void loadVert(objData* objData, char* data, int dataSize, int* bufferSize)
             value[count] = '\0';
             //Reallocate the memory    
             
-            if(*bufferSize % 500 == 0)
+            if(objData->vCount % 500 == 0)
             {
-                void* temp = realloc(objData->vertices, sizeof(float)*500 +
-                    *(bufferSize)*sizeof(float));  
+                //void* temp = realloc(objData->vertices, sizeof(float)*500 +
+                //    objData->vCount*sizeof(float));  
             
-                if(temp == NULL)
-                {
-                    exit(0);
-                }
-                objData->vertices = temp;
+                //if(temp == NULL)
+                //{
+                 //   exit(0);
+                //}
+                //objData->vertices = temp;
+                objData->vertices = realloc(objData->vertices, sizeof(float)*500 +
+                    objData->vCount*sizeof(float));
             }
             //Append the float value   
-            objData->vertices[*bufferSize] = atof(value);
+            objData->vertices[objData->vCount] = atof(value);
             //printf("%f \n",objData->vertices[*bufferSize]);
             objData->vCount+=1;
-            *bufferSize+=1;
             numCount+=1;
         }
     }
 }
 
 //Texture coordinate loader
-void loadTex(objData* objData, char* data, int dataSize, int* bufferSize)
+void loadTex(objData* objData, char* data, int dataSize)
 {
     //Number buffer
     char* buffer = malloc(25);
@@ -94,29 +95,29 @@ void loadTex(objData* objData, char* data, int dataSize, int* bufferSize)
             value[count] = '\0';
             //Reallocate the memory    
             
-            if(*bufferSize % 500 == 0)
+            if(objData->tCount % 500 == 0)
             {
-                void* temp = realloc(objData->textureCoords, sizeof(float)*500 +
-                    *(bufferSize)*sizeof(float));  
+                //void* temp = realloc(objData->textureCoords, sizeof(float)*500 +
+                //    objData->tCount*sizeof(float));  
             
-                if(temp == NULL)
-                {
-                    exit(0);
-                }
-                objData->textureCoords = temp;
+                //if(temp == NULL)
+                //{
+                //    exit(0);
+                //}
+                objData->textureCoords = realloc(objData->textureCoords, sizeof(float)*500 +
+                    objData->tCount*sizeof(float)); 
             }
             //Append the float value   
-            objData->textureCoords[*bufferSize] = atof(value);
+            objData->textureCoords[objData->tCount] = atof(value);
             //printf("%f \n",objData->textureCoords[*bufferSize]);
             objData->tCount+=1;
-            *bufferSize+=1;
             numCount+=1;
         }
     }
 }
 
 //Normals loader
-void loadNorm(objData* objData, char* data, int dataSize, int* bufferSize)
+void loadNorm(objData* objData, char* data, int dataSize)
 {
     //Number buffer
     char* buffer = malloc(25);
@@ -149,29 +150,29 @@ void loadNorm(objData* objData, char* data, int dataSize, int* bufferSize)
             value[count] = '\0';
             //Reallocate the memory    
             
-            if(*bufferSize % 500 == 0)
+            if(objData->nCount % 500 == 0)
             {
-                void* temp = realloc(objData->normals, sizeof(float)*500 +
-                    *(bufferSize)*sizeof(float));  
+                //void* temp = realloc(objData->normals, sizeof(float)*500 +
+                //    objData->nCount *sizeof(float));  
             
-                if(temp == NULL)
-                {
-                    exit(0);
-                }
-                objData->normals = temp;
+                //if(temp == NULL)
+                //{
+                //    exit(0);
+                //}
+                objData->normals = realloc(objData->normals, sizeof(float)*500 +
+                    objData->nCount *sizeof(float));
             }
             //Append the float value   
-            objData->normals[*bufferSize] = atof(value);
+            objData->normals[objData->nCount] = atof(value);
             //printf("%f \n",objData->normals[*bufferSize]);
             objData->nCount+=1;
-            *bufferSize+=1;
             numCount+=1;
         }
     }
 }
 
 //Indice loader
-void loadFace(char* objData, int *c, char* data, int dataSize, int* bufferSize)
+void loadFace(char* line, int *c, char* data, int dataSize)
 {
     //Number buffer
     char* buffer = malloc(25);
@@ -204,20 +205,20 @@ void loadFace(char* objData, int *c, char* data, int dataSize, int* bufferSize)
             value[count] = '\0';
             //Reallocate the memory    
             
-            if(*bufferSize % 500 == 0)
+            if(*c % 500 == 0)
             {
-                void* temp = realloc(objData, sizeof(float)*500 +
-                    *(bufferSize)*sizeof(float));  
+                //void* temp = realloc(line, sizeof(float)*500 +
+                //    *(c)*sizeof(float));  
             
-                if(temp == NULL)
-                {
-                    exit(0);
-                }
-                objData = temp;
+                //if(temp == NULL)
+                //{
+                //    exit(0);
+                //}
+                line = realloc(line, sizeof(float)*500 +
+                    *(c)*sizeof(float));
             }
             //Append the float value   
-            objData[*bufferSize] = (atoi(value))-1;
-            *bufferSize+=1;
+            line[*c] = (atoi(value))-1;
             *c += 1;
             numCount+=1;
         }
@@ -252,34 +253,28 @@ objData loadModelOBJ(char* path)
     char* line = NULL;
     size_t size;
 
-    int vBufferCount = 0;
-    int iBufferCount = 0;
-    int tBufferCount = 0;
-    int nBufferCount = 0;
-    int fBufferCount = 0;
-
     //Load data
     while(getline(&line,&size,f) != -1)
     {
         
         if(line[0] == 'v' && isspace(line[1]))
         {
-            loadVert(&data, line, size, &vBufferCount);
+            loadVert(&data, line, size);
         }
         
         if(line[0] == 'v' && line[1] == 't')
         {
-            loadTex(&data, line, size, &tBufferCount);
+            loadTex(&data, line, size);
         }
 
         if(line[0] == 'v' && line[1] == 'n')
         {
-            loadNorm(&data, line, size, &nBufferCount);
+            loadNorm(&data, line, size);
         }
 
         if(line[0] == 'f' && isspace(line[1]))
         {
-            loadFace(faces,&fCount,line, size, &fBufferCount);
+            loadFace(faces,&fCount,line, size);
         }
         
     }
@@ -296,7 +291,6 @@ objData loadModelOBJ(char* path)
 
     //generate indices
     
-    
     data.iCount = fCount/3;
     data.indices = malloc(data.iCount*sizeof(int));
     for(int i = 0; i < data.iCount; i++)
@@ -305,12 +299,14 @@ objData loadModelOBJ(char* path)
     }
 
     //Reallocate texture coordinates
-    temp = realloc(data.textureCoords, data.tCount*sizeof(float));  
+    //temp = realloc(data.textureCoords, data.tCount*sizeof(float)); 
+    temp = malloc(data.tCount*sizeof(float));
     if(temp == NULL)
     {
         data.success = 0;
         return data;
     }
+    memcpy(temp,data.textureCoords,data.tCount*sizeof(float));
     data.textureCoords = malloc(data.tCount*sizeof(float));
     for(int i = 0; i < fCount; i++)
     {
@@ -324,12 +320,14 @@ objData loadModelOBJ(char* path)
     }
     //free(temp);
     //Reallocate normals
-    temp = realloc(data.normals, data.nCount*sizeof(float));  
+    //temp = realloc(data.normals, data.nCount*sizeof(float));  
+    temp = malloc(data.nCount*sizeof(float));
     if(temp == NULL)
     {
         data.success = 0;
         return data;
     }
+    memcpy(temp,data.normals,data.nCount*sizeof(float));
     data.normals = malloc(data.nCount*sizeof(float));
     for(int i = 0; i < fCount; i++)
     {
@@ -341,7 +339,6 @@ objData loadModelOBJ(char* path)
             3*sizeof(float)
         );
     }
-    
 
     return data;
 }
