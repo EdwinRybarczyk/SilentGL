@@ -66,7 +66,7 @@ int main()
 
 	SDL_Event event;
 
-	//Rasterizer test
+	//Rasterizer test 
 	createSilentRasterizer(screenWidth,screenHeight);
 	char* pixels = silentGetRenderBuffer();
 	
@@ -115,9 +115,11 @@ int main()
 			if(event.type == SDL_QUIT){running = 0;break;}
 		}
 	
+		//Load obj1
 		va = 0;
 		silentLoadVao(vao);
 		silentRenderIndices();
+		//Load obj2
 		va = 1;
 		silentLoadVao(vao2);
 		silentRenderIndices();
