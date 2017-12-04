@@ -93,7 +93,7 @@ void setPixel(int x, int y, float z, Colour colour)
 	//	y*silentRasterizer->width + x
 	//] > z)
 	//printf("%f\n",z);
-	{
+	//{
 
 		if(!((x > silentRasterizer->width || x < 0) &&
 			(y > 0 && y < silentRasterizer->height)) )
@@ -103,7 +103,7 @@ void setPixel(int x, int y, float z, Colour colour)
 			silentRasterizer->pixels[x + 1] = colour.g;
 			silentRasterizer->pixels[x + 2] = colour.r;
 		}
-	}
+	//}
 }
 
 void silentRenderIndices()
@@ -214,9 +214,9 @@ void silentRenderIndices()
 				if((cy1 < cx1)&&(cy2 < cx2)&&(cy3 < cx3))
 				{
 					//Calculate baryocentric coordinates
-					cx1 = ((cx1-cy1)/zArea);
-					cx2 = ((cx2-cy2)/zArea);
-					cx3 = ((cx3-cy3)/zArea);
+					//cx1 = ((cx1-cy1)/zArea);
+					//cx2 = ((cx2-cy2)/zArea);
+					//cx3 = ((cx3-cy3)/zArea);
 
 					//Calculate Z buffer
 					//z = 1/((v0.z * cx2) + (v1.z * cx3) + (v2.z * cx1));

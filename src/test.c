@@ -73,7 +73,7 @@ int main()
 	//Loading data
 	//Load object
 	objData model = loadModelOBJ("untitled1.obj");
-	objData model2 = loadModelOBJ("untitled1.obj");
+	//objData model2 = loadModelOBJ("untitled1.obj");
 	//Load shaders
 	silentLoadVertexShader(vertexShader);
 	silentLoadFragmentShader(fragmentShader);
@@ -81,29 +81,32 @@ int main()
 	SilentVertexArray* vao = silentCreateVao(2);
 	//Create vertex VBO
 	SilentVertexBuffer* vert = 
-		silentCreateVbo(SILENT_VBO_VERTEX,model.vCount/**sizeof(float)*/);
+		silentCreateVbo(SILENT_VBO_VERTEX,model.vCount*sizeof(float));
 	vert->floatingPoint = model.vertices;
 	//Create indice VBO
 	SilentVertexBuffer* ind = 
-		silentCreateVbo(SILENT_VBO_INDICE,model.iCount/**sizeof(int)*/);
+		silentCreateVbo(SILENT_VBO_INDICE,model.iCount*sizeof(int));
 	ind->integer = model.indices;
 
+	
+	/*
 	//Create VAO2
 	SilentVertexArray* vao2 = silentCreateVao(2);
 	//Create vertex VBO2
 	SilentVertexBuffer* vert2 = 
-		silentCreateVbo(SILENT_VBO_VERTEX,model2.vCount/**sizeof(float)*/);
+		silentCreateVbo(SILENT_VBO_VERTEX,model2.vCount*sizeof(float));
 	vert2->floatingPoint = model2.vertices;
 	//Create indice VBO2
 	SilentVertexBuffer* ind2 = 
-		silentCreateVbo(SILENT_VBO_INDICE,model2.iCount/**sizeof(int)*/);
+		silentCreateVbo(SILENT_VBO_INDICE,model2.iCount*sizeof(int));
 	ind2->integer = model2.indices;
+	*/
 	silentLoadVao(vao);
 	//Load the 2 VBOs
 	silentLoadVbo(vao,vert);
 	silentLoadVbo(vao,ind);
-	silentLoadVbo(vao2,vert2);
-	silentLoadVbo(vao2,ind2);
+	//silentLoadVbo(vao2,vert2);
+	//silentLoadVbo(vao2,ind2);
 	//Main loop
 	char running = 1;
 	while(running)
@@ -116,13 +119,13 @@ int main()
 		}
 	
 		//Load obj1
-		va = 0;
-		silentLoadVao(vao);
-		silentRenderIndices();
+		//va = 0;
+		//silentLoadVao(vao);
+		//silentRenderIndices();
 		//Load obj2
-		va = 1;
-		silentLoadVao(vao2);
-		silentRenderIndices();
+		//va = 1;
+		//silentLoadVao(vao2);
+		//silentRenderIndices();
 		//SDL stuff
 		SDL_UpdateTexture(texture,NULL,pixels,screenWidth * 4);
 		SDL_RenderCopy(renderer,texture,NULL,NULL);
