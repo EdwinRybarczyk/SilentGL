@@ -109,8 +109,8 @@ int main()
 	//silentLoadVbo(vao2,ind2);
 	//Main loop
 	char running = 1;
-	while(running)
-	//for(int i = 0; i < 60; i++)
+	//while(running)
+	for(int i = 0; i < 60; i++)
 	{
 		//SDL event stuff
 		while(SDL_PollEvent(&event))
@@ -120,8 +120,8 @@ int main()
 	
 		//Load obj1
 		//va = 0;
-		//silentLoadVao(vao);
-		//silentRenderIndices();
+		silentLoadVao(vao);
+		silentRenderIndices();
 		//Load obj2
 		//va = 1;
 		//silentLoadVao(vao2);

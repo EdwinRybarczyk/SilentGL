@@ -9,7 +9,7 @@
 void loadVert(objData* objData, char* data, int dataSize)
 {
     //Number buffer
-    char* buffer = malloc(25);
+    char* buffer = malloc(100);
     //Iterate through line
     int numCount = 0;
     for(int i = 0; i < dataSize; i++)
@@ -65,7 +65,7 @@ void loadVert(objData* objData, char* data, int dataSize)
 void loadTex(objData* objData, char* data, int dataSize)
 {
     //Number buffer
-    char* buffer = malloc(25);
+    char* buffer = malloc(100);
     //Iterate through line
     int numCount = 0;
     for(int i = 0; i < dataSize; i++)
@@ -120,7 +120,7 @@ void loadTex(objData* objData, char* data, int dataSize)
 void loadNorm(objData* objData, char* data, int dataSize)
 {
     //Number buffer
-    char* buffer = malloc(25);
+    char* buffer = malloc(100);
     //Iterate through line
     int numCount = 0;
     for(int i = 0; i < dataSize; i++)
@@ -172,10 +172,10 @@ void loadNorm(objData* objData, char* data, int dataSize)
 }
 
 //Indice loader
-void loadFace(char* line, int *c, char* data, int dataSize)
+void loadFace(int* line, int *c, char* data, int dataSize)
 {
     //Number buffer
-    char* buffer = malloc(25);
+    char* buffer = malloc(100);
     //Iterate through line
     int numCount = 0;
     for(int i = 0; i < dataSize; i++)
@@ -238,7 +238,7 @@ objData loadModelOBJ(char* path)
     data->normals = malloc(501*sizeof(float));
     data->nCount = 0;
     data->success = 1;
-    char* faces = malloc(500*sizeof(int));
+    int* faces = malloc(500*sizeof(int));
     int fCount = 0;
 
     FILE* f;
@@ -293,21 +293,27 @@ objData loadModelOBJ(char* path)
         data->indices[i] = faces[i*3];
     }
 
+    /*
     //Reallocate texture coordinates
     //temp = realloc(data.textureCoords, data.tCount*sizeof(float)); 
     temp = malloc(data->tCount*sizeof(float));
     memcpy(temp,data->textureCoords,data->tCount*sizeof(float));
 
     data->textureCoords = malloc(data->tCount*sizeof(float));
-    for(int i = 0; i < fCount; i++)
+    for(int i = 0; i < fCount/3; i++)
     {
-        int v = faces[i*3];
-        int t = faces[i*3+1];
+        //int v = faces[i*3];
+        //int t = faces[i*3+1];
+        //fix this
+        /*
         memcpy(
             &data->textureCoords[v],
             &temp[faces[t]],
             2*sizeof(float)
         );
+        //printf("t1 %f t2 %f\n",temp[faces[i*3+1]*2],temp[faces[i*3+1]*2+1]);
+        data->textureCoords[faces[i*3]] = temp[faces[i*3+1]*2];
+        data->textureCoords[faces[i*3]+1] = temp[faces[i*3+1]*2+1];
     }
     //free(temp);
     //Reallocate normals
@@ -319,18 +325,39 @@ objData loadModelOBJ(char* path)
         data->success = 0;
         return *data;
     }*/
+    /*
     memcpy(temp,data->normals,data->nCount*sizeof(float));
     data->normals = malloc(data->nCount*sizeof(float));
-    for(int i = 0; i < fCount; i++)
+    for(int i = 0; i < fCount/3; i++)
     {
         int v = faces[i*3];
         int t = faces[i*3+2];
-        memcpy(
-            &data->normals[v],
-            &temp[faces[t]],
-            3*sizeof(float)
-        );
+        //memcpy(
+        //    &data->normals[v],
+        //    &temp[faces[t]],
+        //    3*sizeof(float)
+        //);
+        data->textureCoords[faces[i*3]] = temp[faces[i*3+1]*3];
+        data->textureCoords[faces[i*3]+1] = temp[faces[i*3+1]*3+1];
+        data->textureCoords[faces[i*3]+2] = temp[faces[i*3+1]*3+2];
+       
+    }
+    //free(temp);
+
+    for(int i = 0; i < data->vCount;i++)
+    {
+        printf("v%f\n",data->vertices[i]);
     }
 
+    for(int i = 0; i < data->tCount;i++)
+    {
+        printf("vt%f\n",data->textureCoords[i]);
+    }
+
+    for(int i = 0; i < data->nCount;i++)
+    {
+        printf("vn%f\n",data->textureCoords[i]);
+    }
+*/
     return *data;
 }
