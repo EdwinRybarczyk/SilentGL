@@ -197,7 +197,7 @@ void loadFace(int* line, int *c, char* data, int dataSize)
                 //Increase character count
                 count++;
             }
-            printf("%i\n",count);
+            //printf("%i\n",count);
             //Allocate space for the value and terminator
             value = malloc(count+1);
             //Copy the value from the buffer
@@ -206,11 +206,11 @@ void loadFace(int* line, int *c, char* data, int dataSize)
             value[count] = '\0';
             //Reallocate the memory    
             
-            if(*c % 500 == 0)
-            {
-                line = realloc(line, sizeof(float)*500 +
-                    (*c)*sizeof(float));
-            }
+            //if(*c % 500 == 0)
+            //{
+            //    line = realloc(line, sizeof(float)*500 +
+            //        (*c)*sizeof(float));
+            //}
             //Append the float value   
             line[*c] = (atoi(value))-1;
             *c += 1;
@@ -222,7 +222,7 @@ void loadFace(int* line, int *c, char* data, int dataSize)
 
 objData* loadModelOBJ(char* path)
 {
-    char* locale = setlocale(LC_ALL,"en_UK.utf8");
+    //char* locale = setlocale(LC_ALL,"en_UK.utf8");
     objData *data = malloc(sizeof(objData));
     data->vertices = malloc(501*sizeof(float));
     data->vCount = 0;
@@ -233,7 +233,7 @@ objData* loadModelOBJ(char* path)
     data->normals = malloc(501*sizeof(float));
     data->nCount = 0;
     data->success = 1;
-    int* faces = malloc(500*sizeof(int));
+    int* faces = malloc(50100*sizeof(int));
     int fCount = 0;
 
     FILE* f;
@@ -344,7 +344,7 @@ objData* loadModelOBJ(char* path)
     //    printf("v %f\n",data->vertices[i]);
     //}
 
-    printf("vcount:%i\n",data->vCount);
+    printf("icount:%i\n",data->iCount);
 
 /*
     for(int i = 0; i < data->tCount;i++)

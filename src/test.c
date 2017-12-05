@@ -12,7 +12,7 @@ void vertexShader(vec3f* v)
 	{
 		//v->y += 2;
 		//v->z += 2;
-		//v->x += 0;
+		v->x += sin(g);
 		v->z += 6.5;
 	}
 	else
@@ -76,8 +76,8 @@ int main()
 	
 	//Loading data
 	//Load object
-	objData *model = loadModelOBJ("untitled.obj");
-	objData *model2 = loadModelOBJ("untitled1.obj");
+	objData *model = loadModelOBJ("wolfe.obj");
+	//objData *model2 = loadModelOBJ("untitled1.obj");
 	//Load shaders
 	silentLoadVertexShader(vertexShader);
 	silentLoadFragmentShader(fragmentShader);
@@ -95,26 +95,26 @@ int main()
 	
 	
 	//Create VAO2
-	SilentVertexArray* vao2 = silentCreateVao(2);
+	//SilentVertexArray* vao2 = silentCreateVao(2);
 	//Create vertex VBO2
-	SilentVertexBuffer* vert2 = 
-		silentCreateVbo(SILENT_VBO_VERTEX,model2->vCount);
-	vert2->floatingPoint = model2->vertices;
+	//SilentVertexBuffer* vert2 = 
+	//	silentCreateVbo(SILENT_VBO_VERTEX,model2->vCount);
+	//vert2->floatingPoint = model2->vertices;
 	//Create indice VBO2
-	SilentVertexBuffer* ind2 = 
-		silentCreateVbo(SILENT_VBO_INDICE,model2->iCount);
-	ind2->integer = model2->indices;
+	//SilentVertexBuffer* ind2 = 
+	//	silentCreateVbo(SILENT_VBO_INDICE,model2->iCount);
+	//ind2->integer = model2->indices;
 	
 	silentLoadVao(vao);
 	//Load the 2 VBOs
 	silentLoadVbo(vao,vert);
 	silentLoadVbo(vao,ind);
-	silentLoadVbo(vao2,vert2);
-	silentLoadVbo(vao2,ind2);
+	//silentLoadVbo(vao2,vert2);
+	//silentLoadVbo(vao2,ind2);
 	//Main loop
 	char running = 1;
 	while(running)
-	//for(int i = 0; i < 10; i++)
+	//for(int i = 0; i < 1; i++)
 	{
 		//SDL event stuff
 		while(SDL_PollEvent(&event))
@@ -128,8 +128,8 @@ int main()
 		silentRenderIndices();
 		//Load obj2
 		va = 1;
-		silentLoadVao(vao2);
-		silentRenderIndices();
+		//silentLoadVao(vao2);
+		//silentRenderIndices();
 		g+= 0.05;
 		//SDL stuff
 		SDL_UpdateTexture(texture,NULL,pixels,screenWidth * 4);

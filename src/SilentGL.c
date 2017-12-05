@@ -132,24 +132,25 @@ void silentRenderIndices()
 
 	while(iterator < silentRasterizer->vao->vbo[1].vboCount)
 	{
+		printf("it: %i\n",silentRasterizer->vao->vbo[1].vboCount);
 		//printf("vbo:%i\n",silentRasterizer->vao->vbo[1].vboCount);
 		memcpy(&v0,&silentRasterizer->vao->vbo[0].floatingPoint[
 			silentRasterizer->vao->vbo[1].integer[iterator]*3],
-			12
+			3*sizeof(float)
 		);
 		iterator += 1;
 		silentRasterizer->vertexShader(&v0);
 
 		memcpy(&v1,&silentRasterizer->vao->vbo[0].floatingPoint[
 			silentRasterizer->vao->vbo[1].integer[iterator]*3],
-			12
+			3*sizeof(float)
 		);
 		iterator += 1;
 		silentRasterizer->vertexShader(&v1);
 
 		memcpy(&v2,&silentRasterizer->vao->vbo[0].floatingPoint[
 			silentRasterizer->vao->vbo[1].integer[iterator]*3],
-			12
+			3*sizeof(float)
 		);
 		iterator += 1;
 		silentRasterizer->vertexShader(&v2);
