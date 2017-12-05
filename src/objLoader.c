@@ -215,7 +215,7 @@ void loadFace(int* line, int *c, char* data, int dataSize)
                 //    exit(0);
                 //}
                 line = realloc(line, sizeof(float)*500 +
-                    *(c)*sizeof(float));
+                    (*c)*sizeof(float));
             }
             //Append the float value   
             line[*c] = (atoi(value))-1;
@@ -342,13 +342,16 @@ objData loadModelOBJ(char* path)
         data->textureCoords[faces[i*3]+2] = temp[faces[i*3+1]*3+2];
        
     }
-    //free(temp);
+    //free(temp);*/
 
     for(int i = 0; i < data->vCount;i++)
     {
-        printf("v%f\n",data->vertices[i]);
+        printf("v %f\n",data->vertices[i]);
     }
 
+    printf("vcount:%i\n",data->vCount);
+
+/*
     for(int i = 0; i < data->tCount;i++)
     {
         printf("vt%f\n",data->textureCoords[i]);
@@ -357,7 +360,7 @@ objData loadModelOBJ(char* path)
     for(int i = 0; i < data->nCount;i++)
     {
         printf("vn%f\n",data->textureCoords[i]);
-    }
-*/
+    }*/
+
     return *data;
 }

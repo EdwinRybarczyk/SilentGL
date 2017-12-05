@@ -10,8 +10,6 @@ void createSilentRasterizer(int screenWidth, int screenHeight)
 	silentRasterizer->zBuffer = malloc(screenWidth*screenHeight*4);
 	//Trust it works
 	memset(silentRasterizer->zBuffer,127,screenWidth*screenHeight*4);
-	printf("%f\n",(float)silentRasterizer->zBuffer[0]);
-	getchar();
 	silentRasterizer->width = screenWidth;
 	silentRasterizer->height = screenHeight;
 }
@@ -93,12 +91,13 @@ void silentLoadFragmentShader(fsp shader)
 
 void setPixel(int x, int y, float z, Colour colour)
 {
-	printf("%f\n",z);
 	if(silentRasterizer->zBuffer[
 		y*silentRasterizer->width + x
-	] > z && z >0)	
+	] >= z && z >= 0)	
 	{
-
+		silentRasterizer->zBuffer[
+			y*silentRasterizer->width + x
+		] = z;
 		if(!((x > silentRasterizer->width || x < 0) &&
 			(y > 0 && y < silentRasterizer->height)) )
 		{
@@ -216,7 +215,7 @@ void silentRenderIndices()
 				cx3++;
 
 				
-				if((cy1 < cx1)&&(cy2 < cx2)&&(cy3 < cx3))
+				if((cy1 >= cx1)&&(cy2 >= cx2)&&(cy3 >= cx3))
 				{
 					//Calculate baryocentric coordinates
 					cx1 = ((cx1-cy1)/zArea);

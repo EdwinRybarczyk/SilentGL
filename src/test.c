@@ -3,6 +3,7 @@
 #include "objLoader.h"
 
 char va = 0;
+float g = 0;
 //shaders
 void vertexShader(vec3f* v)
 {
@@ -11,14 +12,14 @@ void vertexShader(vec3f* v)
 	{
 		//v->y += 2;
 		//v->z += 2;
-		v->x += 0.25;
-		v->z += 1.5;
+		v->x += 2;
+		v->z += 4.5 + sin(g);
 	}
 	else
 	{
-		v->x -= 0.25;
+		v->x += 1.5 + sin(g);
 		 //c.r = 255;
-		v->z+=2;
+		v->z += 5.001;
 	}
 	//v->z += 2;
 	//printf("%f %f %f\n",v->x,v->y,v->z);
@@ -73,7 +74,7 @@ int main()
 	
 	//Loading data
 	//Load object
-	objData model = loadModelOBJ("untitled1.obj");
+	objData model = loadModelOBJ("wolfe.obj");
 	objData model2 = loadModelOBJ("untitled1.obj");
 	//Load shaders
 	silentLoadVertexShader(vertexShader);
@@ -127,6 +128,7 @@ int main()
 		va = 1;
 		silentLoadVao(vao2);
 		silentRenderIndices();
+		g+= 0.01;
 		//SDL stuff
 		SDL_UpdateTexture(texture,NULL,pixels,screenWidth * 4);
 		SDL_RenderCopy(renderer,texture,NULL,NULL);
@@ -135,6 +137,7 @@ int main()
 		SDL_RenderClear(renderer);
 		//Clear the buffer
 		memset(pixels,0,screenWidth * screenHeight * 4);
+		memset(silentRasterizer->zBuffer,127,screenWidth * screenHeight * 4);
 		//printf("done frame\n");
 	}
 	
