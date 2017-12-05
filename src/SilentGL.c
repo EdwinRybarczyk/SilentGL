@@ -8,6 +8,10 @@ void createSilentRasterizer(int screenWidth, int screenHeight)
 	silentRasterizer = malloc(sizeof(SilentRasterizer));
 	silentRasterizer->pixels = malloc(screenWidth*screenHeight*4);
 	silentRasterizer->zBuffer = malloc(screenWidth*screenHeight*4);
+	//Trust it works
+	memset(silentRasterizer->zBuffer,127,screenWidth*screenHeight*4);
+	printf("%f\n",(float)silentRasterizer->zBuffer[0]);
+	getchar();
 	silentRasterizer->width = screenWidth;
 	silentRasterizer->height = screenHeight;
 }
@@ -89,11 +93,11 @@ void silentLoadFragmentShader(fsp shader)
 
 void setPixel(int x, int y, float z, Colour colour)
 {
-	//if(silentRasterizer->zBuffer[
-	//	y*silentRasterizer->width + x
-	//] > z)
-	//printf("%f\n",z);
-	//{
+	printf("%f\n",z);
+	if(silentRasterizer->zBuffer[
+		y*silentRasterizer->width + x
+	] > z && z >0)	
+	{
 
 		if(!((x > silentRasterizer->width || x < 0) &&
 			(y > 0 && y < silentRasterizer->height)) )
@@ -103,7 +107,7 @@ void setPixel(int x, int y, float z, Colour colour)
 			silentRasterizer->pixels[x + 1] = colour.g;
 			silentRasterizer->pixels[x + 2] = colour.r;
 		}
-	//}
+	}
 }
 
 void silentRenderIndices()
@@ -129,6 +133,7 @@ void silentRenderIndices()
 
 	while(iterator < silentRasterizer->vao->vbo[1].vboCount)
 	{
+		//printf("vbo:%i\n",silentRasterizer->vao->vbo[1].vboCount);
 		memcpy(&v0,&silentRasterizer->vao->vbo[0].floatingPoint[
 			silentRasterizer->vao->vbo[1].integer[iterator]*3],
 			12
@@ -149,7 +154,7 @@ void silentRenderIndices()
 		);
 		iterator += 1;
 		silentRasterizer->vertexShader(&v2);
-		
+
 		v0.x /= v0.z; v0.y /= v0.z;
 		v1.x /= v1.z; v1.y /= v1.z;
 		v2.x /= v2.z; v2.y /= v2.z;
@@ -188,7 +193,7 @@ void silentRenderIndices()
 		
 		//zBufferArea
 		float zArea = (-((c1x * (v2.y - v0.y)) - (c1y * (v2.x-v0.x))));
-		//v0.z = 1/v0.z; v1.z = 1/v1.z; v2.z = 1/v2.z;
+		v0.z = 1/v0.z; v1.z = 1/v1.z; v2.z = 1/v2.z;
 
 		float z;
 
@@ -214,12 +219,13 @@ void silentRenderIndices()
 				if((cy1 < cx1)&&(cy2 < cx2)&&(cy3 < cx3))
 				{
 					//Calculate baryocentric coordinates
-					//cx1 = ((cx1-cy1)/zArea);
-					//cx2 = ((cx2-cy2)/zArea);
-					//cx3 = ((cx3-cy3)/zArea);
+					cx1 = ((cx1-cy1)/zArea);
+					cx2 = ((cx2-cy2)/zArea);
+					cx3 = ((cx3-cy3)/zArea);
 
 					//Calculate Z buffer
-					//z = 1/((v0.z * cx2) + (v1.z * cx3) + (v2.z * cx1));
+					z = 1/((v0.z * cx2) + (v1.z * cx3) + (v2.z * cx1));
+					//z = 1;
 
 					//cx1 *= z;
 					//cx2 *= z;
