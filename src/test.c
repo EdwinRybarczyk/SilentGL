@@ -12,14 +12,14 @@ void vertexShader(vec3f* v)
 	{
 		//v->y += 2;
 		//v->z += 2;
-		v->x += 2;
-		v->z += 5 + sin(g);
+		//v->x += 0;
+		v->z += 6.5;
 	}
 	else
 	{
-		v->x += 1.5 + sin(g);
+		v->x += sin(g);
 		 //c.r = 255;
-		v->z += 5.001;
+		v->z += 5.001 + cos(g);
 	}
 	//v->z += 2;
 	//printf("%f %f %f\n",v->x,v->y,v->z);
