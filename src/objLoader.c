@@ -175,7 +175,7 @@ void loadNorm(objData* objData, char* data, int dataSize)
 void loadFace(int* line, int *c, char* data, int dataSize)
 {
     //Number buffer
-    char* buffer = malloc(100);
+    char* buffer = malloc(1000);
     //Iterate through line
     int numCount = 0;
     for(int i = 0; i < dataSize; i++)
@@ -197,6 +197,7 @@ void loadFace(int* line, int *c, char* data, int dataSize)
                 //Increase character count
                 count++;
             }
+            printf("%i\n",count);
             //Allocate space for the value and terminator
             value = malloc(count+1);
             //Copy the value from the buffer
@@ -207,13 +208,6 @@ void loadFace(int* line, int *c, char* data, int dataSize)
             
             if(*c % 500 == 0)
             {
-                //void* temp = realloc(line, sizeof(float)*500 +
-                //    *(c)*sizeof(float));  
-            
-                //if(temp == NULL)
-                //{
-                //    exit(0);
-                //}
                 line = realloc(line, sizeof(float)*500 +
                     (*c)*sizeof(float));
             }
@@ -223,9 +217,10 @@ void loadFace(int* line, int *c, char* data, int dataSize)
             numCount+=1;
         }
     }
+    free(buffer);
 }
 
-objData loadModelOBJ(char* path)
+objData* loadModelOBJ(char* path)
 {
     char* locale = setlocale(LC_ALL,"en_UK.utf8");
     objData *data = malloc(sizeof(objData));
@@ -344,10 +339,10 @@ objData loadModelOBJ(char* path)
     }
     //free(temp);*/
 
-    for(int i = 0; i < data->vCount;i++)
-    {
-        printf("v %f\n",data->vertices[i]);
-    }
+    //for(int i = 0; i < data->vCount;i++)
+    //{
+    //    printf("v %f\n",data->vertices[i]);
+    //}
 
     printf("vcount:%i\n",data->vCount);
 
@@ -362,5 +357,5 @@ objData loadModelOBJ(char* path)
         printf("vn%f\n",data->textureCoords[i]);
     }*/
 
-    return *data;
+    return data;
 }

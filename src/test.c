@@ -13,7 +13,7 @@ void vertexShader(vec3f* v)
 		//v->y += 2;
 		//v->z += 2;
 		v->x += 2;
-		v->z += 4.5 + sin(g);
+		v->z += 5 + sin(g);
 	}
 	else
 	{
@@ -45,8 +45,10 @@ Colour fragmentShader()
 
 int main()
 {
-	int screenWidth = 640;
+	int screenWidth = 612;
 	int screenHeight = 480;
+	//int screenWidth = 50;
+	//int screenHeight = 25;
 	char* title = "Hey barbeque, michael here";
 
 	//SDL init
@@ -74,8 +76,8 @@ int main()
 	
 	//Loading data
 	//Load object
-	objData model = loadModelOBJ("wolfe.obj");
-	objData model2 = loadModelOBJ("untitled1.obj");
+	objData *model = loadModelOBJ("untitled.obj");
+	objData *model2 = loadModelOBJ("untitled1.obj");
 	//Load shaders
 	silentLoadVertexShader(vertexShader);
 	silentLoadFragmentShader(fragmentShader);
@@ -83,12 +85,12 @@ int main()
 	SilentVertexArray* vao = silentCreateVao(2);
 	//Create vertex VBO
 	SilentVertexBuffer* vert = 
-		silentCreateVbo(SILENT_VBO_VERTEX,model.vCount);
-	vert->floatingPoint = model.vertices;
+		silentCreateVbo(SILENT_VBO_VERTEX,model->vCount);
+	vert->floatingPoint = model->vertices;
 	//Create indice VBO
 	SilentVertexBuffer* ind = 
-		silentCreateVbo(SILENT_VBO_INDICE,model.iCount);
-	ind->integer = model.indices;
+		silentCreateVbo(SILENT_VBO_INDICE,model->iCount);
+	ind->integer = model->indices;
 
 	
 	
@@ -96,12 +98,12 @@ int main()
 	SilentVertexArray* vao2 = silentCreateVao(2);
 	//Create vertex VBO2
 	SilentVertexBuffer* vert2 = 
-		silentCreateVbo(SILENT_VBO_VERTEX,model2.vCount);
-	vert2->floatingPoint = model2.vertices;
+		silentCreateVbo(SILENT_VBO_VERTEX,model2->vCount);
+	vert2->floatingPoint = model2->vertices;
 	//Create indice VBO2
 	SilentVertexBuffer* ind2 = 
-		silentCreateVbo(SILENT_VBO_INDICE,model2.iCount);
-	ind2->integer = model2.indices;
+		silentCreateVbo(SILENT_VBO_INDICE,model2->iCount);
+	ind2->integer = model2->indices;
 	
 	silentLoadVao(vao);
 	//Load the 2 VBOs
@@ -128,7 +130,7 @@ int main()
 		va = 1;
 		silentLoadVao(vao2);
 		silentRenderIndices();
-		g+= 0.01;
+		g+= 0.05;
 		//SDL stuff
 		SDL_UpdateTexture(texture,NULL,pixels,screenWidth * 4);
 		SDL_RenderCopy(renderer,texture,NULL,NULL);
@@ -141,14 +143,14 @@ int main()
 		//printf("done frame\n");
 	}
 	
-	free(model.vertices);
-	model.vertices = NULL;
-	free(model.indices);
-	model.indices = NULL;
-	free(model.normals);
-	model.normals = NULL;
-	free(model.textureCoords);
-	model.textureCoords = NULL;
+	free(model->vertices);
+	model->vertices = NULL;
+	free(model->indices);
+	model->indices = NULL;
+	free(model->normals);
+	model->normals = NULL;
+	free(model->textureCoords);
+	model->textureCoords = NULL;
 	deleteSilentRasterizer();
 	SDL_DestroyWindow(window);
 

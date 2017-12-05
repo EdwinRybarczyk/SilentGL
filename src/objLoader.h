@@ -13,4 +13,4 @@ typedef struct objData
 }objData;
 
 //Return model data
-objData loadModelOBJ(char* path);
+objData* loadModelOBJ(char* path);

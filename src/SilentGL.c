@@ -175,10 +175,10 @@ void silentRenderIndices()
 		//Rasterize triangle
 		
 		//Calculate bounding rectangle
-		minx = (int)(min3f(v0.x,v1.x,v2.x));
-		maxx = (int)(max3f(v0.x,v1.x,v2.x));
-		miny = (int)(min3f(v0.y,v1.y,v2.y));
-		maxy = (int)(max3f(v0.y,v1.y,v2.y));
+		minx = (int)ceil(min3f(v0.x,v1.x,v2.x));
+		maxx = (int)ceil(max3f(v0.x,v1.x,v2.x));
+		miny = (int)ceil(min3f(v0.y,v1.y,v2.y));
+		maxy = (int)ceil(max3f(v0.y,v1.y,v2.y));
 
 		//Assign X constants for the triangle
 		c1x = v1.x - v0.x;
@@ -215,7 +215,7 @@ void silentRenderIndices()
 				cx3++;
 
 				
-				if((cy1 >= cx1)&&(cy2 >= cx2)&&(cy3 >= cx3))
+				if((cy1 > cx1)&&(cy2 > cx2)&&(cy3 > cx3))
 				{
 					//Calculate baryocentric coordinates
 					cx1 = ((cx1-cy1)/zArea);
