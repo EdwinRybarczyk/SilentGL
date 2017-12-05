@@ -76,7 +76,7 @@ int main()
 	
 	//Loading data
 	//Load object
-	objData *model = loadModelOBJ("untitled2.obj");
+	objData *model = loadModelOBJ("wolfe.obj");
 	objData *model2 = loadModelOBJ("sphere2.obj");
 	//Load shaders
 	silentLoadVertexShader(vertexShader);
@@ -128,8 +128,8 @@ int main()
 		silentRenderIndices();
 		//Load obj2
 		va = 1;
-		silentLoadVao(vao2);
-		silentRenderIndices();
+		//silentLoadVao(vao2);
+		//silentRenderIndices();
 		g+= 0.01;
 		//SDL stuff
 		SDL_UpdateTexture(texture,NULL,pixels,screenWidth * 4);
