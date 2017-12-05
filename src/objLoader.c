@@ -205,14 +205,20 @@ void loadFace(int* line, int *c, char* data, int dataSize)
             //Null terminate the string
             value[count] = '\0';
             //Reallocate the memory    
-            
-            //if(*c % 500 == 0)
-            //{
-            //    line = realloc(line, sizeof(float)*500 +
-            //        (*c)*sizeof(float));
-            //}
+
+            if(((int)(*c) % 500) == 0)
+            {
+                //line = realloc(line, sizeof(float)*500 +
+                    //k *sizeof(float));
+                //int* temp = malloc(sizeof(float)*500 +
+                 //   (*c) *sizeof(float));
+                //memcpy(temp,line,sizeof(float)*500 +
+                 //   (*c) *sizeof(float));
+                //free(line);
+                //line = temp;
+            }
             //Append the float value   
-            line[*c] = (atoi(value))-1;
+            line[(*c)] = (atoi(value))-1;
             *c += 1;
             numCount+=1;
         }
@@ -344,7 +350,7 @@ objData* loadModelOBJ(char* path)
     //    printf("v %f\n",data->vertices[i]);
     //}
 
-    printf("icount:%i\n",data->iCount);
+    //printf("icount:%i\n",data->iCount);
 
 /*
     for(int i = 0; i < data->tCount;i++)

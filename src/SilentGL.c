@@ -132,8 +132,6 @@ void silentRenderIndices()
 
 	while(iterator < silentRasterizer->vao->vbo[1].vboCount)
 	{
-		printf("it: %i\n",silentRasterizer->vao->vbo[1].vboCount);
-		//printf("vbo:%i\n",silentRasterizer->vao->vbo[1].vboCount);
 		memcpy(&v0,&silentRasterizer->vao->vbo[0].floatingPoint[
 			silentRasterizer->vao->vbo[1].integer[iterator]*3],
 			3*sizeof(float)
@@ -190,7 +188,12 @@ void silentRenderIndices()
 		c1y = v1.y - v0.y;
 		c2y = v2.y - v1.y;
 		c3y = v0.y - v2.y;
-		
+
+		//Edge function
+		//float r1 = c1x*(miny-v1.y)-c1y*(minx-v1.x);float e1;
+		//float r2 = c2x*(miny-v2.y)-c2y*(minx-v2.x);float e2;
+		//float r3 = c3x*(miny-v0.y)-c3y*(minx-v0.x);float e3;
+
 		//zBufferArea
 		float zArea = (-((c1x * (v2.y - v0.y)) - (c1y * (v2.x-v0.x))));
 		v0.z = 1/v0.z; v1.z = 1/v1.z; v2.z = 1/v2.z;
@@ -206,37 +209,42 @@ void silentRenderIndices()
 			cy2 = c2x * (y - v1.y);
 			cy3 = c3x * (y - v2.y);
 
+
 			for(x = minx; x < maxx; x++)
 			{
-				cx1 = c1y * (x - v0.x);
-				cx1++;
-				cx2 = c2y * (x - v1.x);
-				cx2++;
-				cx3 = c3y * (x - v2.x);
-				cx3++;
-
 				
+				cx1 = c1y * (x - v0.x);
+				//cx1++;
+				cx2 = c2y * (x - v1.x);
+				//cx2++;
+				cx3 = c3y * (x - v2.x);
+				//cx3++;
+		
 				if((cy1 > cx1)&&(cy2 > cx2)&&(cy3 > cx3))
+				//if(e1 >= 0 && e2 >= 0 && e3 >= 0)
 				{
 					//Calculate baryocentric coordinates
 					cx1 = ((cx1-cy1)/zArea);
 					cx2 = ((cx2-cy2)/zArea);
 					cx3 = ((cx3-cy3)/zArea);
 
+					//e1 /= zArea;
+					//e2 /= zArea;
+					//e3 /= zArea;
+
 					//Calculate Z buffer
 					z = 1/((v0.z * cx2) + (v1.z * cx3) + (v2.z * cx1));
-					//z = 1;
 
 					//cx1 *= z;
 					//cx2 *= z;
 					//cx3 *= z;
 
 					Colour colour = silentRasterizer->fragmentShader();
-					//Colour colour = {255,255,255};
 					//Colour the triangle
+					colour.b *= 1/z * 3;
+					colour.r *= 1/z * 3;
 					setPixel(x,y,z,colour);
 				}
-				
 			}
 		}
 	}
