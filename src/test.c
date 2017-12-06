@@ -17,9 +17,9 @@ void vertexShader(vec3f* v)
 	}
 	else
 	{
-		v->x += sin(g);
+		//v->x += cos(g);
 		 //c.r = 255;
-		//v->y -= 1;
+		v->y -= sin(g);
 		v->z += 5.001 + cos(g);
 	}
 	//v->z += 2;
@@ -78,7 +78,7 @@ int main()
 	//Loading data
 	//Load object
 	objData *model = loadModelOBJ("wolfe.obj");
-	objData *model2 = loadModelOBJ("sphere.obj");
+	objData *model2 = loadModelOBJ("sphere2.obj");
 	//Load shaders
 	silentLoadVertexShader(vertexShader);
 	silentLoadFragmentShader(fragmentShader);
