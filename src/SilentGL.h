@@ -105,4 +105,5 @@ void silentLoadFragmentShader(fsp shader);
 //void silentApplyProjection(int fov, float near, float far);
 //void silentTranslate(float x, float y, float z);
 void silentRenderIndices();
+void silentRenderIndices2();
 #endif
