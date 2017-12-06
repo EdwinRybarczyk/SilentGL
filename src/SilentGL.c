@@ -214,13 +214,13 @@ void silentRenderIndices()
 			{
 				
 				cx1 = c1y * (x - v0.x);
-				//cx1++;
+				//cx1--;
 				cx2 = c2y * (x - v1.x);
-				//cx2++;
+				//cx2--;
 				cx3 = c3y * (x - v2.x);
-				//cx3++;
+				//cx3--;
 		
-				if((cy1 > cx1)&&(cy2 > cx2)&&(cy3 > cx3))
+				if((cy1 >= cx1)&&(cy2 >= cx2)&&(cy3 >= cx3))
 				//if(e1 >= 0 && e2 >= 0 && e3 >= 0)
 				{
 					//Calculate baryocentric coordinates

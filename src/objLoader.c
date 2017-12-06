@@ -208,12 +208,12 @@ void loadFace(int* line, int *c, char* data, int dataSize)
 
             if(((int)(*c) % 500) == 0)
             {
-                //line = realloc(line, sizeof(float)*500 +
-                    //k *sizeof(float));
+                //line = realloc(line, (sizeof(float)*500 +
+                //    (*c) *sizeof(float))*3);
                 //int* temp = malloc(sizeof(float)*500 +
-                 //   (*c) *sizeof(float));
+                  //  (*c) *sizeof(float));
                 //memcpy(temp,line,sizeof(float)*500 +
-                 //   (*c) *sizeof(float));
+                  //  (*c) *sizeof(float));
                 //free(line);
                 //line = temp;
             }

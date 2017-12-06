@@ -19,6 +19,7 @@ void vertexShader(vec3f* v)
 	{
 		v->x += sin(g);
 		 //c.r = 255;
+		//v->y -= 1;
 		v->z += 5.001 + cos(g);
 	}
 	//v->z += 2;
@@ -77,7 +78,7 @@ int main()
 	//Loading data
 	//Load object
 	objData *model = loadModelOBJ("wolfe.obj");
-	objData *model2 = loadModelOBJ("sphere2.obj");
+	objData *model2 = loadModelOBJ("sphere.obj");
 	//Load shaders
 	silentLoadVertexShader(vertexShader);
 	silentLoadFragmentShader(fragmentShader);
@@ -113,8 +114,8 @@ int main()
 	silentLoadVbo(vao2,ind2);
 	//Main loop
 	char running = 1;
-	while(running)
-	//for(int i = 0; i < 60; i++)
+	//while(running)
+	for(int i = 0; i < 600; i++)
 	{
 		//SDL event stuff
 		while(SDL_PollEvent(&event))
@@ -128,8 +129,8 @@ int main()
 		silentRenderIndices();
 		//Load obj2
 		va = 1;
-		//silentLoadVao(vao2);
-		//silentRenderIndices();
+		silentLoadVao(vao2);
+		silentRenderIndices();
 		g+= 0.01;
 		//SDL stuff
 		SDL_UpdateTexture(texture,NULL,pixels,screenWidth * 4);
