@@ -181,28 +181,28 @@ void silentRenderIndices2()
 		float e11 = edgeFunction(v0,v1,minx,miny);
 		float e12 = edgeFunction(v0,v1,minx+1,miny);
 		float e13 = edgeFunction(v0,v1,minx,miny+1);
-		float e1xChange = e12-e11;
-		float e1yChange = e13-e11;
-		//float e1x = (v0.y-v1.y);
-		//float e1y = (v0.x-v1.x);
+		//float e1xChange = e12-e11;
+		//float e1yChange = e13-e11;
+		float e1xChange = (v1.y-v0.y);
+		float e1yChange = (v0.x-v1.x);
 		float e21 = edgeFunction(v1,v2,minx,miny);
 		float e22 = edgeFunction(v1,v2,minx+1,miny);
 		float e23 = edgeFunction(v1,v2,minx,miny+1);
-		float e2xChange = e22-e21;
-		float e2yChange = e23-e21;
-		//float e2x = (v1.y-v2.y);
-		//float e2y = (v1.x-v2.x);
+		//float e2xChange = e22-e21;
+		//float e2yChange = e23-e21;
+		float e2xChange = (v2.y-v1.y);
+		float e2yChange = (v1.x-v2.x);
 		float e31 = edgeFunction(v2,v0,minx,miny);
 		float e32 = edgeFunction(v2,v0,minx+1,miny);
 		float e33 = edgeFunction(v2,v0,minx,miny+1);
-		float e3xChange = e32-e31;
-		float e3yChange = e33-e31;
-		//float e3x = (v2.y-v0.y);
-		//float e3y = (v2.x-v0.x);
+		//float e3xChange = e32-e31;
+		//float e3yChange = e33-e31;
+		float e3xChange = (v0.y-v2.y);
+		float e3yChange = (v2.x-v0.x);
 
 		//float zArea = (-((c1x * (v2.y - v0.y)) - (c1y * (v2.x-v0.x))));
 		float zArea = edgeFunction(v0,v1,v2.x,v2.y);
-		v0.z = 1/v0.z; v1.z = 1/v1.z; v2.z = 1/v2.z;
+		//v0.z = 1/v0.z; v1.z = 1/v1.z; v2.z = 1/v2.z;
 
 		int y;
 		int x;
@@ -222,18 +222,19 @@ void silentRenderIndices2()
 					float w2 = p2/zArea;
 					float w3 = p3/zArea;
 
-					float z = -((v0.z * w1) + (v1.z * w2) + (v2.z * w3));
+					float z = ((v0.z * w1) + (v1.z * w2) + (v2.z * w3));
+					//printf("%f\n",z);
 
 
 					Colour colour = silentRasterizer->fragmentShader();
 					//Colour the triangle
-					colour.b *= z * 3;
-					colour.r *= z * 3;
 
 					//colour.b = 255;
 					//colour.r = 255;
 					//colour.g = 255;
 					//float z = 1;
+					colour.b *= 1/z * 3;
+					colour.r *= 1/z * 3;
 					setPixel(x,y,z,colour);
 				}
 				p1+=e1xChange;
