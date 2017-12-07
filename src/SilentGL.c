@@ -10,6 +10,7 @@ void createSilentRasterizer(int screenWidth, int screenHeight)
 	silentRasterizer->zBuffer = malloc(screenWidth*screenHeight*4);
 	//Trust it works
 	memset(silentRasterizer->zBuffer,127,screenWidth*screenHeight*4);
+	//memset(silentRasterizer->zBuffer,0,screenWidth*screenHeight*4);
 	silentRasterizer->width = screenWidth;
 	silentRasterizer->height = screenHeight;
 }
@@ -91,6 +92,7 @@ void silentLoadFragmentShader(fsp shader)
 
 void setPixel(int x, int y, float z, Colour colour)
 {
+	//printf("%f\n",z);
 	if(silentRasterizer->zBuffer[
 		y*silentRasterizer->width + x
 	] >= z && z >= 0)	
@@ -109,6 +111,11 @@ void setPixel(int x, int y, float z, Colour colour)
 	}
 }
 
+float edgeFunction(vec3f v1,vec3f v2,float x, float y)
+{
+	return (v1.x-v2.x)*(y-v1.y)-(v1.y-v2.y)*(x-v1.x);
+}
+
 void silentRenderIndices2()
 {
 	int iterator = 0;
@@ -119,12 +126,6 @@ void silentRenderIndices2()
 	vec3f v2;
 
 	int minx,maxx,miny,maxy;
-
-	float c1x,c2x,c3x;
-	float c1y,c2y,c3y;
-
-	float cy1,cy2,cy3;
-	float cx1,cx2,cx3;
 
 	float halfWidth, halfHeight;
 
@@ -177,15 +178,30 @@ void silentRenderIndices2()
 		miny = (int)ceil(min3f(v0.y,v1.y,v2.y));
 		maxy = (int)ceil(max3f(v0.y,v1.y,v2.y));
 
-		c1x = v0.x - v1.x; c1y = v1.y - v0.y;
-		c2x = v1.x - v2.x; c2y = v2.y - v1.y;
-		c3x = v2.x - v0.x; c3y = v0.y - v2.y;
+		float e11 = edgeFunction(v0,v1,minx,miny);
+		float e12 = edgeFunction(v0,v1,minx+1,miny);
+		float e13 = edgeFunction(v0,v1,minx,miny+1);
+		float e1xChange = e12-e11;
+		float e1yChange = e13-e11;
+		//float e1x = (v0.y-v1.y);
+		//float e1y = (v0.x-v1.x);
+		float e21 = edgeFunction(v1,v2,minx,miny);
+		float e22 = edgeFunction(v1,v2,minx+1,miny);
+		float e23 = edgeFunction(v1,v2,minx,miny+1);
+		float e2xChange = e22-e21;
+		float e2yChange = e23-e21;
+		//float e2x = (v1.y-v2.y);
+		//float e2y = (v1.x-v2.x);
+		float e31 = edgeFunction(v2,v0,minx,miny);
+		float e32 = edgeFunction(v2,v0,minx+1,miny);
+		float e33 = edgeFunction(v2,v0,minx,miny+1);
+		float e3xChange = e32-e31;
+		float e3yChange = e33-e31;
+		//float e3x = (v2.y-v0.y);
+		//float e3y = (v2.x-v0.x);
 
-		float r1 = (v1.x-v2.x)*(miny-v1.y)-(v1.y-v2.y)*(minx-v1.x);
-		float r2 = (v2.x-v0.x)*(miny-v2.y)-(v2.y-v0.y)*(minx-v2.x);
-		float r3 = (v0.x-v1.x)*(miny-v0.y)-(v0.y-v1.y)*(minx-v0.x);
-
-		float zArea = (-((c1x * (v2.y - v0.y)) - (c1y * (v2.x-v0.x))));
+		//float zArea = (-((c1x * (v2.y - v0.y)) - (c1y * (v2.x-v0.x))));
+		float zArea = edgeFunction(v0,v1,v2.x,v2.y);
 		v0.z = 1/v0.z; v1.z = 1/v1.z; v2.z = 1/v2.z;
 
 		int y;
@@ -193,35 +209,40 @@ void silentRenderIndices2()
 		
 		for(y = miny; y < maxy; y++)
 		{
-			float f1 = r1;
-			float f2 = r2;
-			float f3 = r3;
+			float p1 = e11;
+			float p2 = e21;
+			float p3 = e31;
+
 			for(x = minx; x < maxx; x++)
 			{
 
-				if(f1 >= 0 && f2 >= 0 && f3 >= 0)
+				if(p1 >= 0 && p2 >= 0 && p3 >= 0)
 				{
-					float w1 = f1/zArea;
-					float w2 = f2/zArea;
-					float w3 = f3/zArea;
+					float w1 = p1/zArea;
+					float w2 = p2/zArea;
+					float w3 = p3/zArea;
 
-					float z = 1;///((v0.z * w1) + (v1.z * w2) + (v2.z * w3));
+					float z = -((v0.z * w1) + (v1.z * w2) + (v2.z * w3));
 
 
 					Colour colour = silentRasterizer->fragmentShader();
 					//Colour the triangle
-					colour.b *= 1/z * 3;
-					colour.r *= 1/z * 3;
+					colour.b *= z * 3;
+					colour.r *= z * 3;
+
+					//colour.b = 255;
+					//colour.r = 255;
+					//colour.g = 255;
+					//float z = 1;
 					setPixel(x,y,z,colour);
 				}
-
-				f1 += c2x;
-				f2 += c3x;
-				f3 += c1x;
+				p1+=e1xChange;
+				p2+=e2xChange;
+				p3+=e3xChange;
 			}
-			r1 += c2y;
-			r2 += c3y;
-			r3 += c1y;
+			e11+=e1yChange;
+			e21+=e2yChange;
+			e31+=e3yChange;
 		}
 
 	}

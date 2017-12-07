@@ -21,6 +21,7 @@ void vertexShader(vec3f* v)
 		 //c.r = 255;
 		v->y -= sin(g);
 		v->z += 5.001 + cos(g);
+		//v->z += 5;
 	}
 	//v->z += 2;
 	//printf("%f %f %f\n",v->x,v->y,v->z);
@@ -126,11 +127,11 @@ int main()
 		//Load obj1
 		va = 0;
 		silentLoadVao(vao);
-		silentRenderIndices();
+		silentRenderIndices2();
 		//Load obj2
 		va = 1;
 		silentLoadVao(vao2);
-		silentRenderIndices();
+		silentRenderIndices2();
 		g+= 0.01;
 		//SDL stuff
 		SDL_UpdateTexture(texture,NULL,pixels,screenWidth * 4);
