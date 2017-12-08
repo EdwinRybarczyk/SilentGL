@@ -100,7 +100,7 @@ void setPixel(int x, int y, float z, Colour colour)
 		silentRasterizer->zBuffer[
 			y*silentRasterizer->width + x
 		] = z;
-		if(!((x > silentRasterizer->width || x < 0) &&
+		if(!((x >= silentRasterizer->width || x < 0) &&
 			(y > 0 && y < silentRasterizer->height)) )
 		{
 			x = (x * 4) + (y * silentRasterizer->width*4);
@@ -202,7 +202,7 @@ void silentRenderIndices2()
 
 		//float zArea = (-((c1x * (v2.y - v0.y)) - (c1y * (v2.x-v0.x))));
 		float zArea = edgeFunction(v0,v1,v2.x,v2.y);
-		//v0.z = 1/v0.z; v1.z = 1/v1.z; v2.z = 1/v2.z;
+		v0.z = 1/v0.z; v1.z = 1/v1.z; v2.z = 1/v2.z;
 
 		int y;
 		int x;
@@ -222,7 +222,7 @@ void silentRenderIndices2()
 					float w2 = p2/zArea;
 					float w3 = p3/zArea;
 
-					float z = ((v0.z * w2) + (v1.z * w3) + (v2.z * w1));
+					float z = 1/((v0.z * w2) + (v1.z * w3) + (v2.z * w1));
 					//printf("%f\n",z);
 
 
