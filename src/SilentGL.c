@@ -216,13 +216,13 @@ void silentRenderIndices2()
 			for(x = minx; x < maxx; x++)
 			{
 
-				if(p1 >= 0 && p2 >= 0 && p3 >= 0)
+				if(p1 <= 0 && p2 <= 0 && p3 <= 0)
 				{
 					float w1 = p1/zArea;
 					float w2 = p2/zArea;
 					float w3 = p3/zArea;
 
-					float z = ((v0.z * w1) + (v1.z * w2) + (v2.z * w3));
+					float z = ((v0.z * w2) + (v1.z * w3) + (v2.z * w1));
 					//printf("%f\n",z);
 
 
