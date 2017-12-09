@@ -114,7 +114,7 @@ int main()
 	//Main loop
 	char running = 1;
 	//while(running)
-	for(int i = 0; i < 1200; i++)
+	for(int i = 0; i < 600; i++)
 	{
 		//SDL event stuff
 		while(SDL_PollEvent(&event))
