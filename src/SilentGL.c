@@ -3,6 +3,9 @@
 #include <stdio.h>
 #include <math.h>
 #include <string.h>
+#ifdef __linux__
+#include <pthread.h>
+#endif
 void createSilentRasterizer(int screenWidth, int screenHeight)
 {
 	silentRasterizer = malloc(sizeof(SilentRasterizer));
@@ -116,7 +119,176 @@ float edgeFunction(vec3f v1,vec3f v2,float x, float y)
 	return (v1.x-v2.x)*(y-v1.y)-(v1.y-v2.y)*(x-v1.x);
 }
 
-void silentRenderIndices2()
+
+#ifdef __linux__
+
+typedef struct tData
+{
+	int* index;
+	int count;
+}tData;
+
+void drawTriangles(tData *data)
+{
+	int iterator = 0;
+	//printf("threadStart %i\n",data->count);
+	//prepare space for vertices
+	vec3f v0;
+	vec3f v1;
+	vec3f v2;
+
+	int minx,maxx,miny,maxy;
+
+	float halfWidth, halfHeight;
+
+	float d2r = M_PI/180;
+
+	while(iterator < data->count)
+	{
+		memcpy(&v0,&silentRasterizer->vao->vbo[0].floatingPoint[
+			data->index[iterator]*3],
+			3*sizeof(float)
+		);
+		iterator += 1;
+		silentRasterizer->vertexShader(&v0);
+
+		memcpy(&v1,&silentRasterizer->vao->vbo[0].floatingPoint[
+			data->index[iterator]*3],
+			3*sizeof(float)
+		);
+		iterator += 1;
+		silentRasterizer->vertexShader(&v1);
+
+		memcpy(&v2,&silentRasterizer->vao->vbo[0].floatingPoint[
+			data->index[iterator]*3],
+			3*sizeof(float)
+		);
+		iterator += 1;
+		silentRasterizer->vertexShader(&v2);
+
+		v0.x /= v0.z; v0.y /= v0.z;
+		v1.x /= v1.z; v1.y /= v1.z;
+		v2.x /= v2.z; v2.y /= v2.z;
+
+		halfWidth = (0.5 * silentRasterizer->width);
+		halfHeight = (0.5 * silentRasterizer->height);
+	
+		v0.x = (halfWidth - (-v0.x * halfWidth));
+		v0.y = (halfHeight - (v0.y * halfHeight));
+
+		v1.x = (halfWidth - (-v1.x * halfWidth));
+		v1.y = (halfHeight - (v1.y * halfHeight));
+
+
+		v2.x = (halfWidth - (-v2.x * halfWidth));
+		v2.y = (halfHeight - (v2.y * halfHeight));
+
+		minx = (int)ceil(min3f(v0.x,v1.x,v2.x));
+		maxx = (int)ceil(max3f(v0.x,v1.x,v2.x));
+		miny = (int)ceil(min3f(v0.y,v1.y,v2.y));
+		maxy = (int)ceil(max3f(v0.y,v1.y,v2.y));
+
+
+		float e11 = edgeFunction(v0,v1,minx,miny);
+		float e1xChange = (v1.y-v0.y);
+		float e1yChange = (v0.x-v1.x);
+		float e21 = edgeFunction(v1,v2,minx,miny);
+		float e2xChange = (v2.y-v1.y);
+		float e2yChange = (v1.x-v2.x);
+		float e31 = edgeFunction(v2,v0,minx,miny);
+		float e3xChange = (v0.y-v2.y);
+		float e3yChange = (v2.x-v0.x);
+
+		float zArea = edgeFunction(v0,v1,v2.x,v2.y);
+
+		int y;
+		int x;
+
+		for(y = miny; y < maxy; y++)
+		{
+			float p1 = e11;
+			float p2 = e21;
+			float p3 = e31;
+
+			for(x = minx; x < maxx; x++)
+			{
+
+				if(p1 < 0 && p2 < 0 && p3 < 0)
+				{
+					float w1 = p1/zArea;
+					float w2 = p2/zArea;
+					float w3 = p3/zArea;
+
+					float z = ((v0.z * w2) + (v1.z * w3) + (v2.z * w1));
+					//printf("%f\n",z);
+
+
+					Colour colour = silentRasterizer->fragmentShader();
+					//Colour the triangle
+
+					//colour.b = 255;
+					//colour.r = 255;
+					//colour.g = 255;
+					//float z = 1;
+					colour.b *= 1/z * 3;
+					colour.r *= 1/z * 3;
+					setPixel(x,y,z,colour);
+				}
+				p1+=e1xChange;
+				p2+=e2xChange;
+				p3+=e3xChange;
+			}
+			e11+=e1yChange;
+			e21+=e2yChange;
+			e31+=e3yChange;
+		}
+	}
+
+	free(data);
+}
+
+void silentRenderIndices()
+{
+	//sleep(2);
+	//Number of threads
+	int threads = 6;
+	int triangles = silentRasterizer->vao->vbo[1].vboCount/3;
+	//If theres a small amount of triangles just render
+	//them on a single core
+	if(triangles<threads)
+	{
+		tData *data = malloc(sizeof(tData));
+		data->index = silentRasterizer->vao->vbo[1].integer;
+		data->count = triangles*3;
+		drawTriangles(data);
+	}
+
+	else{
+		//pthread_t *threadArray = malloc(threads * sizeof(pthread_t));
+		tData **data = malloc(sizeof(tData*)*threads);
+		int trianglesToDo = triangles;
+		int trianglesPerThread = triangles/threads;
+		int* index = silentRasterizer->vao->vbo[1].integer;
+		for(int i = 0; i < threads-1; i++)
+		{
+			data[i] = malloc(sizeof(tData));
+			data[i]->index = index;
+			data[i]->count = trianglesPerThread*3;
+			pthread_t thread;
+			pthread_create(&thread,NULL,drawTriangles,(void *)data[i]);
+			index += trianglesPerThread*3;
+			trianglesToDo -= trianglesPerThread*3;
+		}
+		data[threads] = malloc(sizeof(tData));
+		data[threads]->index = index;
+		data[threads]->count = trianglesToDo;
+		pthread_t thread;
+		pthread_create(&thread,NULL,drawTriangles,(void *)data[threads]);
+	}
+}
+#else
+
+void silentRenderIndices()
 {
 	int iterator = 0;
 
@@ -153,6 +325,11 @@ void silentRenderIndices2()
 		);
 		iterator += 1;
 		silentRasterizer->vertexShader(&v2);
+
+		//if(v0.z <= 0 && v1.z <= 0 && v2.z <= 0)
+		//{
+		//	continue;
+		//}
 
 		v0.x /= v0.z; v0.y /= v0.z;
 		v1.x /= v1.z; v1.y /= v1.z;
@@ -243,6 +420,9 @@ void silentRenderIndices2()
 	}
 }
 
+#endif
+
+/*
 void silentRenderIndices()
 {
 	int iterator = 0;
@@ -376,4 +556,4 @@ void silentRenderIndices()
 			}
 		}
 	}
-}
+}*/

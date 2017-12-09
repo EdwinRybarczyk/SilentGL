@@ -7,7 +7,6 @@ float g = 0;
 //shaders
 void vertexShader(vec3f* v)
 {
-	//v->x += 0.5;
 	if(va == 0)
 	{
 		//v->y += 2;
@@ -23,7 +22,6 @@ void vertexShader(vec3f* v)
 		v->z += 5.001 + cos(g);
 		//v->z += 5;
 	}
-	//v->z += 2;
 	//printf("%f %f %f\n",v->x,v->y,v->z);
 }
 
@@ -58,11 +56,11 @@ int main()
 		title, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
 		screenWidth,screenHeight, SDL_WINDOW_SHOWN);
 
-	//SDL_Renderer* renderer = SDL_CreateRenderer(
-	//window, -1, SDL_RENDERER_ACCELERATED || SDL_RENDERER_PRESENTVSYNC);
-	
 	SDL_Renderer* renderer = SDL_CreateRenderer(
-		window, -1, SDL_RENDERER_PRESENTVSYNC);
+		window, -1, SDL_RENDERER_ACCELERATED );
+	
+	//SDL_Renderer* renderer = SDL_CreateRenderer(
+	//	window, -1, SDL_RENDERER_PRESENTVSYNC);
 		
 	SDL_Texture* texture = SDL_CreateTexture(
 		renderer, SDL_PIXELFORMAT_RGB888,
@@ -116,7 +114,7 @@ int main()
 	//Main loop
 	char running = 1;
 	//while(running)
-	for(int i = 0; i < 600; i++)
+	for(int i = 0; i < 1200; i++)
 	{
 		//SDL event stuff
 		while(SDL_PollEvent(&event))
@@ -125,13 +123,13 @@ int main()
 		}
 	
 		//Load obj1
-		va = 0;
-		silentLoadVao(vao);
-		silentRenderIndices2();
+		//va = 0;
+		//silentLoadVao(vao);
+		//silentRenderIndices();
 		//Load obj2
 		va = 1;
 		silentLoadVao(vao2);
-		silentRenderIndices2();
+		silentRenderIndices();
 		g+= 0.01;
 		//SDL stuff
 		SDL_UpdateTexture(texture,NULL,pixels,screenWidth * 4);
