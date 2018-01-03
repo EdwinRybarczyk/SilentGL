@@ -84,13 +84,14 @@ int main()
 	//Create VAO
 	SilentVertexArray* vao = silentCreateVao(2);
 	//Create vertex VBO
+	printf("%i\n",model2->vertices->dataCount);
 	SilentVertexBuffer* vert = 
-		silentCreateVbo(SILENT_VBO_VERTEX,model->vCount);
-	vert->floatingPoint = model->vertices;
+		silentCreateVbo(SILENT_VBO_VERTEX,model->vertices->dataCount);
+	vert->floatingPoint = model->vertices->floats;
 	//Create indice VBO
 	SilentVertexBuffer* ind = 
-		silentCreateVbo(SILENT_VBO_INDICE,model->iCount);
-	ind->integer = model->indices;
+		silentCreateVbo(SILENT_VBO_INDICE,model->indices->dataCount);
+	ind->integer = model->indices->integers;
 
 	
 	
@@ -98,12 +99,12 @@ int main()
 	SilentVertexArray* vao2 = silentCreateVao(2);
 	//Create vertex VBO2
 	SilentVertexBuffer* vert2 = 
-		silentCreateVbo(SILENT_VBO_VERTEX,model2->vCount);
-	vert2->floatingPoint = model2->vertices;
+		silentCreateVbo(SILENT_VBO_VERTEX,model2->vertices->dataCount);
+	vert2->floatingPoint = model2->vertices->floats;
 	//Create indice VBO2
 	SilentVertexBuffer* ind2 = 
-		silentCreateVbo(SILENT_VBO_INDICE,model2->iCount);
-	ind2->integer = model2->indices;
+		silentCreateVbo(SILENT_VBO_INDICE,model2->indices->dataCount);
+	ind2->integer = model2->indices->integers;
 	
 	silentLoadVao(vao);
 	//Load the 2 VBOs

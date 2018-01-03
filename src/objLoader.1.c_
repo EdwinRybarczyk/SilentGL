@@ -6,7 +6,7 @@
 #include <locale.h>
 
 //Vertice loader
-void loadVert(vector* verts, char* data, int dataSize)
+void loadVert(objData* objData, char* data, int dataSize)
 {
     //Number buffer
     char* buffer = malloc(100);
@@ -37,18 +37,32 @@ void loadVert(vector* verts, char* data, int dataSize)
             memcpy(value,buffer,count);
             //Null terminate the string
             value[count] = '\0';
+            //Reallocate the memory    
+            
+            if(objData->vCount % 500 == 0)
+            {
+                //void* temp = realloc(objData->vertices, sizeof(float)*500 +
+                //    objData->vCount*sizeof(float));  
+            
+                //if(temp == NULL)
+                //{
+                 //   exit(0);
+                //}
+                //objData->vertices = temp;
+                objData->vertices = realloc(objData->vertices, sizeof(float)*500 +
+                    objData->vCount*sizeof(float));
+            }
             //Append the float value   
-            float* val = malloc(sizeof(float));
-            *val = atof(value);
-            vectorPushBack(verts,val);
-            free(val);
+            objData->vertices[objData->vCount] = atof(value);
+            //printf("%f \n",objData->vertices[*bufferSize]);
+            objData->vCount+=1;
             numCount+=1;
         }
     }
 }
 
 //Texture coordinate loader
-void loadTex(vector* textureCoordinates, char* data, int dataSize)
+void loadTex(objData* objData, char* data, int dataSize)
 {
     //Number buffer
     char* buffer = malloc(100);
@@ -79,20 +93,31 @@ void loadTex(vector* textureCoordinates, char* data, int dataSize)
             memcpy(value,buffer,count);
             //Null terminate the string
             value[count] = '\0';
+            //Reallocate the memory    
             
+            if(objData->tCount % 500 == 0)
+            {
+                //void* temp = realloc(objData->textureCoords, sizeof(float)*500 +
+                //    objData->tCount*sizeof(float));  
+            
+                //if(temp == NULL)
+                //{
+                //    exit(0);
+                //}
+                objData->textureCoords = realloc(objData->textureCoords, sizeof(float)*500 +
+                    objData->tCount*sizeof(float)); 
+            }
             //Append the float value   
-            //objData->textureCoords[objData->tCount] = atof(value);
-            float* val = malloc(sizeof(float));
-            *val = atof(value);
-            vectorPushBack(textureCoordinates, val);
-            free(val);
+            objData->textureCoords[objData->tCount] = atof(value);
+            //printf("%f \n",objData->textureCoords[*bufferSize]);
+            objData->tCount+=1;
             numCount+=1;
         }
     }
 }
 
 //Normals loader
-void loadNorm(vector* normals, char* data, int dataSize)
+void loadNorm(objData* objData, char* data, int dataSize)
 {
     //Number buffer
     char* buffer = malloc(100);
@@ -123,18 +148,31 @@ void loadNorm(vector* normals, char* data, int dataSize)
             memcpy(value,buffer,count);
             //Null terminate the string
             value[count] = '\0';
+            //Reallocate the memory    
+            
+            if(objData->nCount % 500 == 0)
+            {
+                //void* temp = realloc(objData->normals, sizeof(float)*500 +
+                //    objData->nCount *sizeof(float));  
+            
+                //if(temp == NULL)
+                //{
+                //    exit(0);
+                //}
+                objData->normals = realloc(objData->normals, sizeof(float)*500 +
+                    objData->nCount *sizeof(float));
+            }
             //Append the float value   
-            float* val = malloc(sizeof(float));
-            *val = atof(value);
-            vectorPushBack(normals, val);
-            free(val);
+            objData->normals[objData->nCount] = atof(value);
+            //printf("%f \n",objData->normals[*bufferSize]);
+            objData->nCount+=1;
             numCount+=1;
         }
     }
 }
 
 //Indice loader
-void loadFace(vector* faces, char* data, int dataSize)
+void loadFace(int* line, int *c, char* data, int dataSize)
 {
     //Number buffer
     char* buffer = malloc(1000);
@@ -168,11 +206,20 @@ void loadFace(vector* faces, char* data, int dataSize)
             value[count] = '\0';
             //Reallocate the memory    
 
+            if(((int)(*c) % 500) == 0)
+            {
+                //line = realloc(line, (sizeof(float)*500 +
+                //    (*c) *sizeof(float))*3);
+                //int* temp = malloc(sizeof(float)*500 +
+                  //  (*c) *sizeof(float));
+                //memcpy(temp,line,sizeof(float)*500 +
+                  //  (*c) *sizeof(float));
+                //free(line);
+                //line = temp;
+            }
             //Append the float value   
-            float* val = malloc(sizeof(float));
-            *val = atof(value);
-            vectorPushBack(faces, val);
-            free(val);
+            line[(*c)] = (atoi(value))-1;
+            *c += 1;
             numCount+=1;
         }
     }
@@ -183,19 +230,24 @@ objData* loadModelOBJ(char* path)
 {
     //char* locale = setlocale(LC_ALL,"en_UK.utf8");
     objData *data = malloc(sizeof(objData));
-    data->vertices = createVector(sizeof(float));
-    data->indices = createVector(sizeof(int));
-    data->textureCoords = createVector(sizeof(float));
-    data->normals = createVector(sizeof(float));
-
-    vector* faces = createVector(sizeof(int));
+    data->vertices = malloc(501*sizeof(float));
+    data->vCount = 0;
+    data->textureCoords = malloc(501*sizeof(float));
+    data->tCount = 0;
+    data->indices = malloc(501*sizeof(int));
+    data->iCount = 0;
+    data->normals = malloc(501*sizeof(float));
+    data->nCount = 0;
+    data->success = 1;
+    int* faces = malloc(50100*sizeof(int));
+    int fCount = 0;
 
     FILE* f;
     f = fopen(path,"r");
     if(f==NULL)
     {
+        data->success = 0;
         printf("file %s could not be opened\n", path);
-        exit(1);
         //return *data;
     }
 
@@ -209,38 +261,37 @@ objData* loadModelOBJ(char* path)
     {
         if(line[0] == 'v' && isspace(line[1]))
         {
-            loadVert(data->vertices, line, size);
+            loadVert(data, line, size);
         }
         
         if(line[0] == 'v' && line[1] == 't')
         {
-            loadTex(data->textureCoords, line, size);
+            loadTex(data, line, size);
         }
 
         if(line[0] == 'v' && line[1] == 'n')
         {
-            loadNorm(data->normals, line, size);
+            loadNorm(data, line, size);
         }
 
         if(line[0] == 'f' && isspace(line[1]))
         {
-            loadFace(faces,line, size);
+            loadFace(faces,&fCount,line, size);
         }
         
         size = getline(&line,&s,f);
     }
     //Reallocate to size and fix indices
-    //float* temp;
+    float* temp;
 
-    //data->vertices = realloc(data->vertices, data->vCount*sizeof(float));
+    data->vertices = realloc(data->vertices, data->vCount*sizeof(float));
 
     //generate indices
-    //data->iCount = fCount/3;
-    //data->indices = malloc(data->iCount*sizeof(int));
-    for(int i = 0; i < faces->dataCount/3; i++)
+    data->iCount = fCount/3;
+    data->indices = malloc(data->iCount*sizeof(int));
+    for(int i = 0; i < data->iCount; i++)
     {
-        //data->indices[i] = faces[i*3];
-        vectorPushBack(data->indices,faces->integers + (i*3));
+        data->indices[i] = faces[i*3];
     }
 
     /*
